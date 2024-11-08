@@ -1,5 +1,6 @@
 package com.example.citylibrary.book;
 
+import com.example.citylibrary.exceptions.LibBookIsOnLoan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +33,23 @@ public class BookService {
         Optional<Books> book = bookRepository.findById(id);
         if (book.isPresent()) {
             book.get().setTitle(newBooks.getTitle());
-            book.get().setAuthorId(newBooks.getAuthorId());
-            book.get().setPublicationYear(newBooks.getPublicationYear());
+           // book.get().setAuthor(newBooks.getAuthor());
+            book.get().setAvailable(newBooks.isAvailable());
+            book.get().setPublication_year(newBooks.getPublication_year());
             return bookRepository.save(book.get());
         } else {
             return null;
+        }
+    }
+
+    public void deleteBook(Long id) {
+        Optional<Books> bookToDelete = bookRepository.findById(id);
+        if (bookToDelete.isPresent()) {
+            if(!bookToDelete.get().isAvailable()) {
+                throw new LibBookIsOnLoan("The book is on loan and cannot be deleted");
+            } else {
+                bookRepository.deleteById(id);
+            }
         }
     }
 

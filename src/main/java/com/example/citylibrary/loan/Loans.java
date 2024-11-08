@@ -15,20 +15,20 @@ public class Loans {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long loanId;
+    private Long loan_id;
 
-    //private Long bookId;
+    private Long user_id;
 
-    private Long userId;
+    private Long book_id;
 
-    private LocalDate loanDate;
+    private LocalDate loan_date;
 
-    private LocalDate dueDate;
+    private LocalDate due_date;
 
-    private LocalDate returnedDate;
+    private LocalDate returned_date;
 
-    @OneToOne
+    /*@OneToOne
     @JoinColumn(name = "book_id")
-    private Books bookId;
+    private Books bookId;*/
 
 }

@@ -180,17 +180,17 @@ DELETE
 FROM admins;
 -- Reset auto-increment counters
 ALTER TABLE loans
-    ALTER COLUMN loan_id RESTART WITH 1;
+    ALTER COLUMN loan_id RESTART WITH 11;
 ALTER TABLE books
-    ALTER COLUMN book_id RESTART WITH 1;
+    ALTER COLUMN book_id RESTART WITH 11;
 ALTER TABLE authors
-    ALTER COLUMN author_id RESTART WITH 1;
+    ALTER COLUMN author_id RESTART WITH 11;
 ALTER TABLE users
-    ALTER COLUMN user_id RESTART WITH 1;
+    ALTER COLUMN user_id RESTART WITH 11;
 ALTER TABLE admins
-    ALTER COLUMN admin_id RESTART WITH 1;
+    ALTER COLUMN admin_id RESTART WITH 11;
 ALTER TABLE genres
-    ALTER COLUMN genre_id RESTART WITH 1;
+    ALTER COLUMN genre_id RESTART WITH 11;
 -- Populate authors
 INSERT INTO authors (author_id, first_name, last_name, birth_date)
 VALUES (1, 'Astrid', 'Lindgren', '1907-11-14'),

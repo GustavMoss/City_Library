@@ -1,4 +1,4 @@
-package com.example.citylibrary.person;
+package com.example.citylibrary.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,15 +14,15 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long user_id;
 
-    private String firstName;
+    private String first_name;
 
-    private String lastName;
+    private String last_name;
 
     private String email;
 
-    private String memberNumber;
+    private String member_number;
 
     //Search by title
     //Search by author

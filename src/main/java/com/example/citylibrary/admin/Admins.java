@@ -1,4 +1,4 @@
-package com.example.citylibrary.book;
+package com.example.citylibrary.admin;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,12 +10,20 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Genres {
+public class Admins {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long genreId;
+    private Long admin_id;
 
-    private String name;
+    private String username;
+
+    private String password;
+
+    private String role;
+
+    //Add book
+    //Add visitor
+    //Check borrowed books and their borrower
 
 }

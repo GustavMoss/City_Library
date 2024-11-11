@@ -1,15 +1,20 @@
 package com.example.citylibrary.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.citylibrary.loan.Loans;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Users {
 
     @Id
@@ -23,6 +28,10 @@ public class Users {
     private String email;
 
     private String member_number;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Loans> loans;
 
     //Search by title
     //Search by author

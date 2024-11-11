@@ -1,12 +1,12 @@
 package com.example.citylibrary.loan;
 
-import com.example.citylibrary.book.Books;
+import com.example.citylibrary.user.Users;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.print.Book;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +17,7 @@ public class Loans {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loan_id;
 
-    private Long user_id;
+   // private Long user_id;
 
     private Long book_id;
 
@@ -26,6 +26,10 @@ public class Loans {
     private LocalDate due_date;
 
     private LocalDate returned_date;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users user;
 
     /*@OneToOne
     @JoinColumn(name = "book_id")

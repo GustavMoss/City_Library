@@ -1,6 +1,7 @@
 package com.example.citylibrary.user;
 
 import com.example.citylibrary.book.BookService;
+import com.example.citylibrary.loan.LoanService;
 import com.example.citylibrary.loan.Loans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final LoanService loanService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, LoanService loanService) {
         this.userService = userService;
+        this.loanService = loanService;
     }
 
     // See a users active loans
@@ -68,8 +71,13 @@ public class UserController {
 
     // loan a book, this might just call the loan methods/controller?
     @PostMapping("/{userId}/new-loan")
-    public Loans createNewLoan(@PathVariable Long userId, @RequestBody Loans loan) {
+    public Loans createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
+
+        return loanService.createNewLoan(userId, bookId);
+
         // not sure about this one.
-        return null;
+        // think we'll need to pass userId and bookId to this. And then generate dates. So loan_date would be date.now() or similar
+        // due_date would be something akin to date.now() + 1 month or similar.
+        // then either make the new loan here, or pass it to the loan controller and/or the create loan endpoint with the correct data.
     }
 }

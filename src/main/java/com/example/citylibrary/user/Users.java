@@ -29,7 +29,7 @@ public class Users {
 
     private String member_number;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user_id")
     @JsonIgnore
     private List<Loans> loans;
 

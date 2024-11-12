@@ -37,4 +37,12 @@ public class Authors {
         this.birth_date = birth_date;
 
     }
+
+    public String getFirstName() {
+        return first_name;
+    }
+
+    public String getLastName() {
+        return last_name;
+    }
 }

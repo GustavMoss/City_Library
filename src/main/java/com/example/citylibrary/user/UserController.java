@@ -73,7 +73,7 @@ public class UserController {
     @PostMapping("/{userId}/new-loan")
     public Loans createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
 
-        return loanService.createLoan(userId, bookId);
+        return loanService.createLoan(bookId, userId);
 
         // not sure about this one.
         // think we'll need to pass userId and bookId to this. And then generate dates. So loan_date would be date.now() or similar

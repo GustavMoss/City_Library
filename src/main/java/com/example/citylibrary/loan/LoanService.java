@@ -41,7 +41,7 @@ public class LoanService {
         
         Books book = bookService.getBookById(bookId).orElse(null);
         loan.setBook_Id(book);
-        Users user = userService.getUserById(bookId).orElse(null);
+        Users user = userService.getUserById(userId).orElse(null);
         loan.setUser_id(user);
         
         loan.setLoan_date(LocalDate.now());

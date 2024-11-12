@@ -28,8 +28,20 @@ public class UserService {
         return userRepo.findById(id).get().getLoans();
     }
 
+    // get a specific user by ID
+    public Optional<Users> getUserById(Long id) throws LibBadRequest {
+        Optional<Users> user = userRepo.findById(id);
+
+        if(user.isPresent()) {
+            return user;
+        } else {
+            throw new LibBadRequest("User not found");
+        }
+
+    }
+
     // update a users info
-    public Users updateUserById(Long id, Users user) {
+    public Users updateUserById(Long id, Users user) throws LibBadRequest {
         Optional<Users> userToUpdate = userRepo.findById(id);
 
         if (userToUpdate.isPresent()) {

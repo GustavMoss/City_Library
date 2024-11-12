@@ -7,14 +7,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.citylibrary.book.BookService;
+import com.example.citylibrary.book.Books;
+
 @Service
 public class LoanService {
 
     private final LoanRepository loanRepository;
+    private final BookService bookService;
+
 
     @Autowired
-    public LoanService(LoanRepository loanRepository) {
+    public LoanService(LoanRepository loanRepository, BookService bookService) {
         this.loanRepository = loanRepository;
+        this.bookService = bookService;
     }
 
     public List<Loans> getAllLoans() {
@@ -25,10 +31,22 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loans createLoan(Loans loan) {
-        // loan.setLoan_date(LocalDate.now());
+    public Loans createLoan(Long bookId/* , Long userId */) {
+
+        Loans loan = new Loans();
         
+        Books book = bookService.getBookById(bookId).orElse(null);
+        loan.setBook_Id(book);
+        System.out.println("-----------Book: " + book);
+        //Users user = userService.getUserById(bookId).orElse(null);
+        //loan.setUser_id(user);
+        loan.setUser_id(null);
+        
+        loan.setLoan_date(LocalDate.now());
+        loan.setDue_date(LocalDate.now().plusMonths(1));
         loan.setReturned_date(null);
+        
+        System.out.println("-----------Loan: " + loan);
         return loanRepository.save(loan);
     }
 
@@ -47,10 +65,10 @@ public class LoanService {
         }
     }
 
-    public Loans addReturnedDate(Long id, LocalDate returnedDate) {
+    public Loans addReturnedDate(Long id) {
         Optional<Loans> loan = loanRepository.findById(id);
         if (loan.isPresent()) {
-            loan.get().setReturned_date(returnedDate);
+            loan.get().setReturned_date(LocalDate.now());
             return loanRepository.save(loan.get());
         } else {
             return null;

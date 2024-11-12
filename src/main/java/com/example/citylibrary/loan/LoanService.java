@@ -1,49 +1,87 @@
 package com.example.citylibrary.loan;
 
-import com.example.citylibrary.exceptions.LibBadRequest;
-import com.example.citylibrary.user.UserRepository;
-import com.example.citylibrary.user.UserService;
-import com.example.citylibrary.user.Users;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.Optional;
+import com.example.citylibrary.book.BookService;
+import com.example.citylibrary.book.Books;
 
 @Service
 public class LoanService {
-    private final LoanRepository loanRepo;
-    private final UserService userService;
-    private final UserRepository userRepository;
+
+    private final LoanRepository loanRepository;
+    private final BookService bookService;
+
 
     @Autowired
-    public LoanService(LoanRepository loanRepo, UserService userService, UserRepository userRepository) {
-        this.loanRepo = loanRepo;
-        this.userService = userService;
-        this.userRepository = userRepository;
+    public LoanService(LoanRepository loanRepository, BookService bookService) {
+        this.loanRepository = loanRepository;
+        this.bookService = bookService;
     }
 
-    // creates a new loan in the db with userId, bookId and dates
-    public Loans createNewLoan(Long userId, Long bookId) {
+    public List<Loans> getAllLoans() {
+        return loanRepository.findAll();
+    }
 
-        Loans newLoan = new Loans();
+    public Optional<Loans> getLoanById(Long id) {
+        return loanRepository.findById(id);
+    }
 
-        // fetch the user
-        Optional<Users> currentUser = userRepository.findById(userId);
+    public Loans createLoan(Long bookId/* , Long userId */) {
 
-        if (currentUser.isPresent()) {
-            newLoan.setUser(currentUser.get());
+        Loans loan = new Loans();
+        
+        Books book = bookService.getBookById(bookId).orElse(null);
+        loan.setBook_Id(book);
+        System.out.println("-----------Book: " + book);
+        //Users user = userService.getUserById(bookId).orElse(null);
+        //loan.setUser_id(user);
+        loan.setUser_id(null);
+        
+        loan.setLoan_date(LocalDate.now());
+        loan.setDue_date(LocalDate.now().plusMonths(1));
+        loan.setReturned_date(null);
+        
+        System.out.println("-----------Loan: " + loan);
+        return loanRepository.save(loan);
+    }
+
+    public Loans updateLoan(Long id, Loans newLoan) {
+        Optional<Loans> loan = loanRepository.findById(id);
+        if (loan.isPresent()) {
+            loan.get().setBook_Id(newLoan.getBook_Id());
+            loan.get().setDue_date(newLoan.getDue_date());
+            loan.get().setLoan_date(newLoan.getLoan_date());
+            loan.get().setLoan_id(newLoan.getLoan_id());
+            loan.get().setReturned_date(newLoan.getReturned_date());
+            loan.get().setUser_id(newLoan.getUser_id());
+            return loanRepository.save(loan.get());
         } else {
-            throw new LibBadRequest("Could not find user with id " + userId);
+            return null;
         }
+    }
 
-        newLoan.setBook_id(bookId);
-        newLoan.setReturned_date(null);
-        newLoan.setLoan_date(LocalDate.now());
-        newLoan.setDue_date(LocalDate.now().plusMonths(1));
+    public Loans addReturnedDate(Long id) {
+        Optional<Loans> loan = loanRepository.findById(id);
+        if (loan.isPresent()) {
+            loan.get().setReturned_date(LocalDate.now());
+            return loanRepository.save(loan.get());
+        } else {
+            return null;
+        }
+    }
 
-        return loanRepo.save(newLoan);
+    public void deleteLoan(Long id) {
+        Optional<Loans> loanToDelete = loanRepository.findById(id);
+        if (loanToDelete.isPresent()) {
+            loanRepository.deleteById(loanToDelete.get().getLoan_id());
+        } else {
+            // Skapa en ExceptionHandler här för Loan som
+            // inte existerar ???
+        }
     }
 }

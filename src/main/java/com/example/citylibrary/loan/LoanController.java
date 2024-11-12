@@ -36,8 +36,8 @@ public class LoanController {
     }
 
     @PostMapping
-    public Loans createLoan(@RequestParam Long bookId /*, @RequestParam Long userId */) {
-        return loanService.createLoan(bookId /*, userId */);
+    public Loans createLoan(@RequestParam Long bookId, @RequestParam Long userId ) {
+        return loanService.createLoan(bookId, userId );
     }
 
     @PutMapping("/{id}")

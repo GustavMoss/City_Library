@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.citylibrary.user.UserService;
+import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +17,14 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final BookService bookService;
+    private final UserService userService;
 
 
     @Autowired
-    public LoanService(LoanRepository loanRepository, BookService bookService) {
+    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService) {
         this.loanRepository = loanRepository;
         this.bookService = bookService;
+        this.userService = userService;
     }
 
     public List<Loans> getAllLoans() {
@@ -31,22 +35,19 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loans createLoan(Long bookId/* , Long userId */) {
+    public Loans createLoan(Long bookId , Long userId) {
 
         Loans loan = new Loans();
         
         Books book = bookService.getBookById(bookId).orElse(null);
         loan.setBook_Id(book);
-        System.out.println("-----------Book: " + book);
-        //Users user = userService.getUserById(bookId).orElse(null);
-        //loan.setUser_id(user);
-        loan.setUser_id(null);
+        Users user = userService.getUserById(bookId).orElse(null);
+        loan.setUser_id(user);
         
         loan.setLoan_date(LocalDate.now());
         loan.setDue_date(LocalDate.now().plusMonths(1));
         loan.setReturned_date(null);
-        
-        System.out.println("-----------Loan: " + loan);
+
         return loanRepository.save(loan);
     }
 

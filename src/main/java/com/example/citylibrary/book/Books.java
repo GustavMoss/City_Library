@@ -31,7 +31,7 @@ public class Books {
     @JoinColumn(name = "author_id")
     private Authors author;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable(
             name = "books_genres",
             joinColumns = @JoinColumn(name = "book_id"),

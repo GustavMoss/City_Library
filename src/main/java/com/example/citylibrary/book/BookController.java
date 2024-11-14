@@ -1,6 +1,9 @@
 package com.example.citylibrary.book;
 
+import com.example.citylibrary.exceptions.LibBookIsOnLoan;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +42,18 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
+        try {
+            boolean isDeleted = bookService.deleteBook(id);
+            if (isDeleted) {
+                return ResponseEntity.ok("Book with id " + id + " was successfully deleted.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with id " + id + " not found.");
+            }
+        } catch (LibBookIsOnLoan ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+        }
     }
 }

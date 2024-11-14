@@ -42,15 +42,17 @@ public class BookService {
         }
     }
 
-    public void deleteBook(Long id) {
+    public boolean deleteBook(Long id) {
         Optional<Books> bookToDelete = bookRepository.findById(id);
         if (bookToDelete.isPresent()) {
-            if(!bookToDelete.get().isAvailable()) {
+            if (!bookToDelete.get().isAvailable()) {
                 throw new LibBookIsOnLoan("The book is on loan and cannot be deleted");
             } else {
                 bookRepository.deleteById(id);
+                return true;
             }
         }
+        return false;
     }
 
 

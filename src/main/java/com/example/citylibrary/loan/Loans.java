@@ -26,7 +26,7 @@ public class Loans {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loan_id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "book_id")
     private Books book_Id;
     

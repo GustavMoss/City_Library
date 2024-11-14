@@ -2,6 +2,8 @@ package com.example.citylibrary.book;
 
 import com.example.citylibrary.author.Authors;
 import com.example.citylibrary.genre.Genres;
+import com.example.citylibrary.loan.Loans;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +28,10 @@ public class Books {
     private int publication_year;
 
     private boolean available;
+
+    @OneToMany(mappedBy = "book_Id", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
+    private List<Loans> loans;
 
     @ManyToOne
     @JoinColumn(name = "author_id")

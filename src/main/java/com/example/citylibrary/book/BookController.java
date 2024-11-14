@@ -27,8 +27,14 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Books> getBookById(@PathVariable Long id) {
-        return bookService.getBookById(id);
+    public ResponseEntity<Optional<Books>> getBookById(@PathVariable Long id) {
+        Optional<Books> book = bookService.getBookById(id);
+
+        if (book.isPresent()) {
+            return new ResponseEntity<>(book, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping

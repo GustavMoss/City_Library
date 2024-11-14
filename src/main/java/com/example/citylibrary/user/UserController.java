@@ -3,6 +3,7 @@ package com.example.citylibrary.user;
 import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.loan.LoanService;
 import com.example.citylibrary.loan.Loans;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,14 +34,14 @@ public class UserController {
 
     // create/register new user
     @PostMapping
-    public ResponseEntity<Users> postNewUser(@RequestBody Users user) {
+    public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
 
     // update user info
     @PutMapping("/{userId}")
-    public Users updateUser(@PathVariable Long userId, @RequestBody Users user) {
+    public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
         return userService.updateUserById(userId, user);
     }
 

@@ -24,7 +24,7 @@ public class UserService {
     }
 
     // see a users active loans
-    public List<Loans> getLoansById(Long id) {
+    public List<Loans> getLoansByUserId(Long id) {
         return userRepo.findById(id).get().getLoans();
     }
 

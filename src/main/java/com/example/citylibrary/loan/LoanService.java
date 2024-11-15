@@ -1,18 +1,20 @@
 package com.example.citylibrary.loan;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
+import com.example.citylibrary.book.BookService;
+import com.example.citylibrary.book.Books;
+import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.example.citylibrary.book.BookService;
-import com.example.citylibrary.book.Books;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class LoanService {
 
     private final LoanRepository loanRepository;
@@ -35,15 +37,31 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loans createLoan(Long bookId , Long userId) {
+    public Loans createLoan(Long bookId , Long userId) throws LibBadRequest {
 
         Loans loan = new Loans();
-        
-        Books book = bookService.getBookById(bookId).orElse(null);
-        loan.setBook_Id(book);
-        Users user = userService.getUserById(userId).orElse(null);
-        loan.setUser_id(user);
-        
+
+        // TODO: take another look at the error handling, not printing out the message. Might need to use try/catch?
+        Optional<Books> book = bookService.getBookById(bookId);
+
+        if (book.isPresent()) {
+            if (!book.get().isAvailable()) {
+                throw new LibBadRequest("Book is not available");
+            }
+            loan.setBook_Id(book.get());
+            bookService.changeAvailability(book.get().getBook_id());
+        } else {
+            throw new LibBadRequest("book not found");
+        }
+
+        Optional<Users> user = userService.getUserById(userId);
+
+        if (user.isPresent()) {
+            loan.setUser_id(user.get());
+        } else {
+            throw new LibBadRequest("user not found");
+        }
+
         loan.setLoan_date(LocalDate.now());
         loan.setDue_date(LocalDate.now().plusMonths(1));
         loan.setReturned_date(null);
@@ -66,6 +84,7 @@ public class LoanService {
         }
     }
 
+    // TODO: change availability of the book once it's returned, also return a proper error or something? MIght be done in the controller though
     public Loans addReturnedDate(Long id) {
         Optional<Loans> loan = loanRepository.findById(id);
         if (loan.isPresent()) {

@@ -44,12 +44,5 @@ public class Users {
     @JsonIgnore
     private List<Loans> loans;
 
-    //Search by title
-    //Search by author
-    //Search by ISBN
-
-    //Check if book is available
-
-    //Check active loans and return date
 
 }

@@ -26,8 +26,10 @@ public class SearchService {
         return allBooks.stream()
                 .filter(book -> {
                     Authors bookAuthor = book.getAuthor();
-                    return bookAuthor.getFirst_name().toLowerCase().contains(author.toLowerCase())
-                            || bookAuthor.getLast_name().toLowerCase().contains(author.toLowerCase());
+                    String fullName = bookAuthor.getFirst_name() + " " + bookAuthor.getLast_name();
+                    return fullName.toLowerCase().contains(author.toLowerCase());
+                    /*return bookAuthor.getFirst_name().toLowerCase().contains(author.toLowerCase())
+                            || bookAuthor.getLast_name().toLowerCase().contains(author.toLowerCase());*/
                 })
                 .collect(Collectors.toList());
     }

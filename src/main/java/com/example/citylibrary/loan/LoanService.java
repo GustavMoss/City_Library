@@ -83,11 +83,17 @@ public class LoanService {
             return null;
         }
     }
-
-    // TODO: change availability of the book once it's returned, also return a proper error or something? MIght be done in the controller though
+    
     public Loans addReturnedDate(Long id) {
         Optional<Loans> loan = loanRepository.findById(id);
+
         if (loan.isPresent()) {
+            Optional<Books> book = bookService.getBookById(loan.get().getBook_Id().getBook_id());
+            if (book.isPresent()) {
+                book.get().setAvailable(true);
+            } else {
+                throw new LibBadRequest("book not found");
+            }
             loan.get().setReturned_date(LocalDate.now());
             return loanRepository.save(loan.get());
         } else {

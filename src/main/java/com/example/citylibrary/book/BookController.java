@@ -1,6 +1,7 @@
 package com.example.citylibrary.book;
 
 import com.example.citylibrary.exceptions.LibBookIsOnLoan;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +39,12 @@ public class BookController {
     }
 
     @PostMapping
-    public Books addBook(@RequestBody Books books) {
+    public Books addBook(@RequestBody @Valid Books books) {
         return bookService.addBook(books);
     }
 
     @PutMapping("/{id}")
-    public Books updateBook(@PathVariable Long id, @RequestBody Books books) {
+    public Books updateBook(@PathVariable @Valid Long id, @RequestBody Books books) {
         return bookService.updateBook(books, id);
     }
 

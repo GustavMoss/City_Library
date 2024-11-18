@@ -5,6 +5,9 @@ import com.example.citylibrary.genre.Genres;
 import com.example.citylibrary.loan.Loans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
@@ -21,8 +24,11 @@ public class Books {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long book_id;
 
+    @NotBlank(message = "Title cannot be empty")
+    @Size(min = 5, max = 100, message = "Name must be between 5 and 100 characters long")
     private String title;
 
+    @Min(value = 0, message = "Publication year cannot be a negative number")
     private int publication_year;
 
     private boolean available;

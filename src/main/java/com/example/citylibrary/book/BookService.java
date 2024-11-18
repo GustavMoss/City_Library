@@ -34,7 +34,7 @@ public class BookService {
         Optional<Books> book = bookRepository.findById(id);
         if (book.isPresent()) {
             book.get().setTitle(newBooks.getTitle());
-           // book.get().setAuthor(newBooks.getAuthor());
+            book.get().setAuthor(newBooks.getAuthor());
             book.get().setAvailable(newBooks.isAvailable());
             book.get().setPublication_year(newBooks.getPublication_year());
             return bookRepository.save(book.get());

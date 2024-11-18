@@ -106,8 +106,7 @@ public class LoanService {
         if (loanToDelete.isPresent()) {
             loanRepository.deleteById(loanToDelete.get().getLoan_id());
         } else {
-            // Skapa en ExceptionHandler här för Loan som
-            // inte existerar ???
+            throw new LibBadRequest("Could not find loan with id " + id);
         }
     }
 }

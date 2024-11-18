@@ -3,6 +3,7 @@ package com.example.citylibrary.author;
 import com.example.citylibrary.book.Books;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Authors {
 
     @Id
@@ -30,11 +32,4 @@ public class Authors {
     @JsonIgnore
     private List<Books> books;
 
-    public Authors(Long author_id, String first_name, String last_name, LocalDate birth_date) {
-        this.author_id = author_id;
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.birth_date = birth_date;
-
-    }
 }

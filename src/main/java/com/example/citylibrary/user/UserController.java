@@ -37,13 +37,12 @@ public class UserController {
     }
 
     // return all of a users loans both inactive and active
-    @GetMapping("/userId/loans")
+    @GetMapping("/{userId}/loans")
     public List<Loans> getAllUserLoansById(@PathVariable Long userId) {
         return userService.getLoansByUserId(userId);
     }
 
-    // might be able to use this one endpoint for both the "Bibliotekarier - låntagare endpoint and the besökare - låntagarfunktioner" both are for seeing active loans. It will also let us get the return dates.
-    // or do I need a seperate endpoint for that?
+    // returns active loans by user id
     @GetMapping("/{userId}/loans/active")
     public List<Loans> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);

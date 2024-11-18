@@ -28,7 +28,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public Users getUserById(@PathVariable Long userId){
         return userService.getUserById(userId).orElse(null);
-
+    }
     // create/register new user
     @PostMapping
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
@@ -37,7 +37,8 @@ public class UserController {
 
     // update user info
     @PutMapping("/{userId}")
-        public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
+    public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
+        return userService.updateUserById(userId, user);
     }
 
     // return all of a users loans both inactive and active
@@ -51,7 +52,6 @@ public class UserController {
     @GetMapping("/{userId}/loans/active")
     public List<Loans> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
-
         return userLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
                 .collect(Collectors.toList());
@@ -60,8 +60,6 @@ public class UserController {
     // loan a book by calling the loanservice and using its methods
     @PostMapping("/{userId}/new-loan")
     public Loans createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
-
         return loanService.createLoan(bookId, userId);
-
     }
 }

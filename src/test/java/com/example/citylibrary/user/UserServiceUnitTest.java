@@ -39,6 +39,7 @@ class UserServiceUnitTest {
         assertEquals("Mange", user.getFirst_name());
         assertEquals("Baker", user.getLast_name());
         assertEquals("mangebaker@gmail.com", user.getEmail());
+        assertEquals("M20230006", user.getMember_number());
     }
 
     @Test
@@ -49,7 +50,7 @@ class UserServiceUnitTest {
         List<Loans> result = userService.getLoansByUserId(user1.getUser_id());
 
         assertNotNull(result);
-        //assertEquals(1, result.size());
+        assertEquals(2, result.size());
     }
 
     @Test
@@ -68,10 +69,14 @@ class UserServiceUnitTest {
         Users updatedUser = userService.getUserById(1L).orElse(null);
 
         updatedUser.setFirst_name("Monika");
+        updatedUser.setLast_name("Bengtsson");
+        updatedUser.setEmail("monikabengtsson@gmail.com");
 
         Users result = userService.updateUserById(1L, updatedUser);
 
         assertEquals(1L, result.getUser_id());
         assertEquals("Monika", result.getFirst_name());
+        assertEquals("Bengtsson", result.getLast_name());
+        assertEquals("monikabengtsson@gmail.com", result.getEmail());
     }
 }

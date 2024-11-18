@@ -38,7 +38,7 @@ public class Users {
     @NotBlank(message = "Member-number cannot be empty")
     private String member_number;
 
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user_id", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Loans> loans;
 

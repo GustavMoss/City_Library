@@ -24,9 +24,20 @@ public class UserController {
         this.loanService = loanService;
     }
 
+    // Get user by id
     @GetMapping("/{userId}")
     public Users getUserById(@PathVariable Long userId){
         return userService.getUserById(userId).orElse(null);
+
+    // create/register new user
+    @PostMapping
+    public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
+        return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
+    }
+
+    // update user info
+    @PutMapping("/{userId}")
+        public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
     }
 
     // return all of a users loans both inactive and active
@@ -45,19 +56,6 @@ public class UserController {
                 .filter(loan -> loan.getReturned_date() == null)
                 .collect(Collectors.toList());
     }
-
-    // create/register new user
-    @PostMapping
-    public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
-        return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
-    }
-
-    // update user info
-    @PutMapping("/{userId}")
-    public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
-        return userService.updateUserById(userId, user);
-    }
-
 
     // loan a book by calling the loanservice and using its methods
     @PostMapping("/{userId}/new-loan")

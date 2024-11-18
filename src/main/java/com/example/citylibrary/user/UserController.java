@@ -24,6 +24,11 @@ public class UserController {
         this.loanService = loanService;
     }
 
+    // Get user by id
+    @GetMapping("/{userId}")
+    public Users getUserById(@PathVariable Long userId){
+        return userService.getUserById(userId).orElse(null);
+
     // create/register new user
     @PostMapping
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
@@ -32,12 +37,11 @@ public class UserController {
 
     // update user info
     @PutMapping("/{userId}")
-    public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
-        return userService.updateUserById(userId, user);
+        public Users updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
     }
 
     // return all of a users loans both inactive and active
-    @GetMapping("/userId/loans")
+    @GetMapping("/{userId}/loans")
     public List<Loans> getAllUserLoansById(@PathVariable Long userId) {
         return userService.getLoansByUserId(userId);
     }

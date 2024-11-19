@@ -7,10 +7,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 import java.util.List;
 
@@ -19,6 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Users {
 
     @Id
@@ -40,7 +39,7 @@ public class Users {
     @NotBlank(message = "Member-number cannot be empty")
     private String member_number;
 
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user_id", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Loans> loans;
 

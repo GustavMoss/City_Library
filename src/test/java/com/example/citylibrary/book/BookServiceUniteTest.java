@@ -28,7 +28,9 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data.sql")
 class BookServiceTest {
-
+    // ********************************
+    // Byggda av Damir Coco
+    // ********************************
 
 
   @Autowired

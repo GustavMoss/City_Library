@@ -21,6 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class SearchControllerIntegrationTest {
 
+    // ********************************
+    // Byggda av Gustav Mossberg
+    // ********************************
+
     @Autowired
     private MockMvc mockMvc;
 

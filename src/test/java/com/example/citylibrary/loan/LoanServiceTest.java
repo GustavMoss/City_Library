@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Sql(scripts = "classpath:data.sql")
 class LoanServiceTest {
 
+    // ********************************
+    // Byggda av Mohammad Khaleqi
+    // ********************************
+
 
     @Autowired
     private LoanService loanService;

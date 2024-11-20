@@ -27,6 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 class UserControllerIntegrationTest {
 
+    // ********************************
+    // Byggda av Simon Jönsson
+    // ********************************
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -101,9 +105,6 @@ class UserControllerIntegrationTest {
         String jsonLoan = "{" +
                 "\"user_id\": 1," +
                 "\"book_id\": 6," +
-                "\"loan_date\": 2023-02-15," +
-                "\"due_date\": 2025-05-29," +
-                "\"returned_date\": null," +
                 "}";
 
         mockMvc.perform(post("/users/1/new-loan")

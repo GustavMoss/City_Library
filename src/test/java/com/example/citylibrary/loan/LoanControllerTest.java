@@ -25,8 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 class LoanControllerTest {
-    @Autowired
 
+    // ********************************
+    // Byggda av Mohammad Khaleqi
+    // ********************************
+
+    @Autowired
     private MockMvc mockMvc;
     @Test
     void getAllLoans() throws Exception {
@@ -49,9 +53,6 @@ class LoanControllerTest {
         String jsonLoan = "{" +
                 "\"user_id\": 1," +
                 "\"book_id\": 6," +
-                "\"loan_date\": 2023-02-15," +
-                "\"due_date\": 2025-05-29," +
-                "\"returned_date\": null," +
                 "}";
         mockMvc.perform(post("/loans")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,14 +65,14 @@ class LoanControllerTest {
     @Test
     void updateLoan() throws Exception {
         String jsonLoan = "{" +
-                "\"book_id\": 6," +
-                "\"loan_date\": 2023-02-15," +
-                "\"due_date\": 2025-05-29" +
-
+                "\"loan_date\": \"2023-02-15\"," +
+                "\"due_date\": \"2025-05-29\"" +
                 "}";
         mockMvc.perform(put("/loans/1").contentType(MediaType.APPLICATION_JSON)
                 .content(jsonLoan)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.loan_id").value(1));
+                .andExpect(jsonPath("$.loan_id").value(1))
+                .andExpect((jsonPath("$.due_date").value("2025-05-29")))
+                .andExpect(jsonPath("$.loan_date").value("2023-02-15"));
     }
 
     @Test

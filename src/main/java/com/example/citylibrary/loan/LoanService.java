@@ -34,6 +34,7 @@ public class LoanService {
     }
 
     public Optional<Loans> getLoanById(Long id) {
+
         return loanRepository.findById(id);
     }
 
@@ -69,22 +70,21 @@ public class LoanService {
         return loanRepository.save(loan);
     }
 
-    public Loans updateLoan(Long id, Loans newLoan) {
+    public Loans updateLoan(Long id, Loans newLoan) throws LibBadRequest {
         Optional<Loans> loan = loanRepository.findById(id);
         if (loan.isPresent()) {
             loan.get().setBook_Id(newLoan.getBook_Id());
             loan.get().setDue_date(newLoan.getDue_date());
             loan.get().setLoan_date(newLoan.getLoan_date());
-            loan.get().setLoan_id(newLoan.getLoan_id());
             loan.get().setReturned_date(newLoan.getReturned_date());
             loan.get().setUser_id(newLoan.getUser_id());
             return loanRepository.save(loan.get());
         } else {
-            return null;
+            throw new LibBadRequest("could not find loan with id: " + id);
         }
     }
     
-    public Loans addReturnedDate(Long id) {
+    public Loans addReturnedDate(Long id) throws LibBadRequest {
         Optional<Loans> loan = loanRepository.findById(id);
 
         if (loan.isPresent()) {
@@ -97,11 +97,11 @@ public class LoanService {
             loan.get().setReturned_date(LocalDate.now());
             return loanRepository.save(loan.get());
         } else {
-            return null;
+            throw new LibBadRequest("could not find loan with id: " + id);
         }
     }
 
-    public void deleteLoan(Long id) {
+    public void deleteLoan(Long id) throws LibBadRequest {
         Optional<Loans> loanToDelete = loanRepository.findById(id);
         if (loanToDelete.isPresent()) {
             loanRepository.deleteById(loanToDelete.get().getLoan_id());

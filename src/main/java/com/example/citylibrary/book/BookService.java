@@ -15,22 +15,26 @@ public class BookService {
 
     @Autowired
     public BookService(BookRepository bookRepository) {
+
         this.bookRepository = bookRepository;
     }
 
     public List<Books> getAllBooks() {
+
         return bookRepository.findAll();
     }
 
     public Books addBook(Books books) {
+
         return bookRepository.save(books);
     }
 
     public Optional<Books> getBookById(Long id) {
+
         return bookRepository.findById(id);
     }
 
-    public Books updateBook(Books newBooks, Long id) {
+    public Books updateBook(Books newBooks, Long id) throws LibBadRequest {
         Optional<Books> book = bookRepository.findById(id);
         if (book.isPresent()) {
             book.get().setTitle(newBooks.getTitle());
@@ -39,7 +43,7 @@ public class BookService {
             book.get().setPublication_year(newBooks.getPublication_year());
             return bookRepository.save(book.get());
         } else {
-            return null;
+            throw new LibBadRequest("Could not find book with id " + id);
         }
     }
 
@@ -53,7 +57,7 @@ public class BookService {
         }
     }
 
-    public boolean deleteBook(Long id) {
+    public boolean deleteBook(Long id) throws LibBookIsOnLoan {
         Optional<Books> bookToDelete = bookRepository.findById(id);
         if (bookToDelete.isPresent()) {
             if (!bookToDelete.get().isAvailable()) {

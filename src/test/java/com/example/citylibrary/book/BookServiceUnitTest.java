@@ -18,6 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data.sql")
+
+// ********************************
+// Byggda av Martin Leo
+// ********************************
+
 class BookServiceUnitTest {
     @Autowired
     private BookService bookService;

@@ -17,6 +17,11 @@ import com.example.citylibrary.loan.Loans;
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data.sql")
 class UserServiceUnitTest {
+
+    // ********************************
+    // Byggda av Simon Jönsson
+    // ********************************
+
     @Autowired
     private UserService userService;
     private LoanService loanService;

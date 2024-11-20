@@ -17,6 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Sql(scripts = "classpath:data.sql")
 class SearchServiceUnitTest {
 
+    // ********************************
+    // Byggda av Gustav Mossberg
+    // ********************************
+
     @Autowired
     private SearchService searchService;
 

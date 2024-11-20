@@ -16,6 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class LoanServiceIntegrationTest {
 
+    // ********************************
+    // Byggda av Damir Coco
+    // ********************************
+
     @Autowired
     private LoanRepository loansRepository;
 

@@ -34,6 +34,7 @@ public class LoanService {
     }
 
     public Optional<Loans> getLoanById(Long id) {
+
         return loanRepository.findById(id);
     }
 

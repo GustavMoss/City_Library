@@ -23,7 +23,7 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    // see a users active loans
+    // get a users loans
     public List<Loans> getLoansByUserId(Long id) {
         return userRepo.findById(id).get().getLoans();
     }
@@ -45,15 +45,10 @@ public class UserService {
         Optional<Users> userToUpdate = userRepo.findById(id);
 
         if (userToUpdate.isPresent()) {
-            // will put values in db to null. Might be solvable with validation?
-            // could also check for null values for each and then set it to the old value if the new is old?
-            // seems like a lot of code though
             userToUpdate.get().setEmail(user.getEmail());
             userToUpdate.get().setFirst_name(user.getFirst_name());
             userToUpdate.get().setLast_name(user.getLast_name());
             userToUpdate.get().setMember_number(user.getMember_number());
-            // set the loans to whatever the loans were, since we are not sending in new loans this way and we don't want them to be null
-            userToUpdate.get().setLoans(userToUpdate.get().getLoans());
 
             return userRepo.save(userToUpdate.get());
         } else {

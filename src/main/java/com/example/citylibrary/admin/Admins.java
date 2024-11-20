@@ -22,8 +22,4 @@ public class Admins {
 
     private String role;
 
-    //Add book
-    //Add visitor
-    //Check borrowed books and their borrower
-
 }

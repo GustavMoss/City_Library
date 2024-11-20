@@ -1,5 +1,6 @@
 package com.example.citylibrary.book;
 
+import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.exceptions.LibBookIsOnLoan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,12 +38,22 @@ public class BookService {
         Optional<Books> book = bookRepository.findById(id);
         if (book.isPresent()) {
             book.get().setTitle(newBooks.getTitle());
-           // book.get().setAuthor(newBooks.getAuthor());
+            book.get().setAuthor(newBooks.getAuthor());
             book.get().setAvailable(newBooks.isAvailable());
             book.get().setPublication_year(newBooks.getPublication_year());
             return bookRepository.save(book.get());
         } else {
             return null;
+        }
+    }
+
+    public void changeAvailability(Long id) throws LibBadRequest {
+        Optional<Books> book = bookRepository.findById(id);
+        if (book.isPresent()) {
+            book.get().setAvailable(!book.get().isAvailable());
+            bookRepository.save(book.get());
+        } else {
+            throw new LibBadRequest("Could not find book with id " + id);
         }
     }
 

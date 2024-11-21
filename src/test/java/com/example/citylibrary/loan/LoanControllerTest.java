@@ -58,7 +58,7 @@ class LoanControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                         .param("bookId","6")
                 .param("userId","1")
-                .content(jsonLoan)).andExpect(status().isOk()).andExpect(jsonPath("$.loan_id")
+                .content(jsonLoan)).andExpect(status().isCreated()).andExpect(jsonPath("$.loan_id")
                 .value(11));
     }
 

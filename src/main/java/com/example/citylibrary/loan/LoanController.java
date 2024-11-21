@@ -3,7 +3,10 @@ package com.example.citylibrary.loan;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,32 +29,38 @@ public class LoanController {
     }
 
     @GetMapping
-    public List<Loans> getAllLoans() {
-        return loanService.getAllLoans();
+    public ResponseEntity<List<Loans>> getAllLoans() {
+        List<Loans> loans = loanService.getAllLoans();
+        return new ResponseEntity<>(loans, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Optional<Loans> getLoanById(@PathVariable Long id) {
-        return loanService.getLoanById(id);
+    public ResponseEntity <Optional<Loans>> getLoanById(@PathVariable Long id) {
+        Optional<Loans> loan = loanService.getLoanById(id);
+        return new ResponseEntity<>(loan, HttpStatus.OK);
     }
 
     @PostMapping
-    public Loans createLoan(@RequestParam Long bookId, @RequestParam Long userId ) {
-        return loanService.createLoan(bookId, userId );
+    public ResponseEntity<Loans> createLoan(@RequestParam Long bookId, @RequestParam Long userId ) {
+        Loans loan = loanService.createLoan(bookId, userId);
+        return new ResponseEntity<>(loan, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public Loans updateLoan(@PathVariable Long id, @RequestBody Loans loan) {
-        return loanService.updateLoan(id, loan);
+    public ResponseEntity<Loans> updateLoan(@PathVariable Long id, @RequestBody @Valid Loans loan) {
+        Loans updatedLoan = loanService.updateLoan(id, loan);
+        return new ResponseEntity<>(updatedLoan, HttpStatus.OK);
     }
 
     @PutMapping("/return/{id}")
-    public Loans addReturnedDate(@PathVariable Long id) {
-        return loanService.addReturnedDate(id);
+    public ResponseEntity<Loans> addReturnedDate(@PathVariable Long id) {
+        Loans loanDate = loanService.addReturnedDate(id);
+        return new ResponseEntity<>(loanDate, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteLoan(@PathVariable Long id) {
+    public ResponseEntity<String> deleteLoan(@PathVariable Long id) {
         loanService.deleteLoan(id);
+        return ResponseEntity.ok("Successfully deleted the loan");
     }
 }

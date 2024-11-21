@@ -63,7 +63,7 @@ class BookControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonBook))
 
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.book_id").value(11))
                 .andExpect(jsonPath("$.title").value("House of Leaves"))
                 .andExpect(jsonPath("$.publication_year").value(2000));
@@ -88,6 +88,6 @@ class BookControllerIntegrationTest {
                 .andExpect(status().isOk());
 
         mockMvc.perform(get("/books/1"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 }

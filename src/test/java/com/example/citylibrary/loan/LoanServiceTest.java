@@ -50,14 +50,14 @@ class LoanServiceTest {
 
     @Test
     void createLoan() {
-        Loans result = loanService.createLoan(2L,4L);
+        Loans result = loanService.createLoan(1L,4L);
 
         assertEquals(11, result.getLoan_id());
         assertEquals(LocalDate.now(),result.getLoan_date());
-        assertEquals(LocalDate.now(),result.getDue_date());
+        assertEquals(LocalDate.now().plusMonths(1),result.getDue_date());
 
 
-        assertEquals(2, result.getBook_Id().getBook_id());
+        assertEquals(1, result.getBook_Id().getBook_id());
         assertEquals(4, result.getUser_id().getUser_id());
         /*assertEquals(5, result.setLoan_date(LocalDate.now()),setDue_date(LocalDate.now()));*/
 

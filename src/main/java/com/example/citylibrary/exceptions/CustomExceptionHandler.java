@@ -19,4 +19,14 @@ public class CustomExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
         return errors;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(LibBadRequest.class)
+    public Map<String, String> handleBadRequest(LibBadRequest ex) {
+        Map<String, String> map =  new HashMap<>();
+        map.put("message", ex.getMessage());
+        return map;
+
+
+    }
 }

@@ -29,9 +29,16 @@ public class BookService {
         return bookRepository.save(books);
     }
 
-    public Optional<Books> getBookById(Long id) {
+    public Optional<Books> getBookById(Long id) throws LibBadRequest {
 
-        return bookRepository.findById(id);
+        Optional<Books> book = bookRepository.findById(id);
+        if (book.isPresent()) {
+            return book;
+        } else {
+            throw new LibBadRequest("Could not find book with id " + id);
+        }
+
+
     }
 
     public Books updateBook(Books newBooks, Long id) throws LibBadRequest {
@@ -39,7 +46,6 @@ public class BookService {
         if (book.isPresent()) {
             book.get().setTitle(newBooks.getTitle());
             book.get().setAuthor(newBooks.getAuthor());
-            book.get().setAvailable(newBooks.isAvailable());
             book.get().setPublication_year(newBooks.getPublication_year());
             return bookRepository.save(book.get());
         } else {

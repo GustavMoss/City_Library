@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.user.Users;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 
 import jakarta.persistence.*;
@@ -33,9 +35,11 @@ public class Loans {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user_id;
-    
+
+    @NotNull(message = "loan date cannot be null")
     private LocalDate loan_date;
 
+    @NotNull(message = "due date cannot be null")
     private LocalDate due_date;
 
     private LocalDate returned_date;

@@ -112,7 +112,7 @@ class UserControllerIntegrationTest {
                         .param("bookId", "6")
                         .content(jsonLoan))
 
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.loan_id").value(11))
                 .andExpect(jsonPath("$.user_id.user_id").value(1))
                 .andExpect(jsonPath("$.book_Id.book_id").value(6))

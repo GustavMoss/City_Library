@@ -73,11 +73,8 @@ public class LoanService {
     public Loans updateLoan(Long id, Loans newLoan) throws LibBadRequest {
         Optional<Loans> loan = loanRepository.findById(id);
         if (loan.isPresent()) {
-            loan.get().setBook_Id(newLoan.getBook_Id());
             loan.get().setDue_date(newLoan.getDue_date());
             loan.get().setLoan_date(newLoan.getLoan_date());
-            loan.get().setReturned_date(newLoan.getReturned_date());
-            loan.get().setUser_id(newLoan.getUser_id());
             return loanRepository.save(loan.get());
         } else {
             throw new LibBadRequest("could not find loan with id: " + id);

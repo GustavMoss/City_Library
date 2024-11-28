@@ -2,7 +2,11 @@ package com.example.citylibrary.user;
 
 import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.loan.Loans;
+import com.example.citylibrary.service.JWTService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +16,14 @@ import java.util.Optional;
 @Service
 public class UserService {
 
+    @Autowired
     private final UserRepository userRepo;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Autowired
+    AuthenticationManager authManager;
 
     // init the password encoder, built into spring security. Used to encode password with bcrypt, the strength is the number of rounds
     // seems very simple to implement.
@@ -61,5 +72,15 @@ public class UserService {
         } else {
             throw new LibBadRequest("Could not find user");
         }
+    }
+
+    public String verify(Users user) {
+        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+        if(auth.isAuthenticated()) {
+            return jwtService.generateToken(user.getEmail());
+        }
+
+        return "fail";
     }
 }

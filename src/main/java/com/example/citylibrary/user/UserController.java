@@ -32,9 +32,15 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
     // create/register new user
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
+    }
+
+    // login end-point
+    @PostMapping("/login")
+    public String login(@RequestBody Users user) {
+        return userService.verify(user);
     }
 
     // update user info

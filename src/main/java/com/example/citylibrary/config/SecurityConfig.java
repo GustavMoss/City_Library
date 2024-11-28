@@ -3,9 +3,11 @@ package com.example.citylibrary.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,7 +31,7 @@ public class SecurityConfig {
 
                     try {
                         auth
-                                .requestMatchers("/users").permitAll() // this should not be open to everyone probably, make a new endpoint specifically for register probably.
+                                .requestMatchers("/users/register", "/users/login").permitAll() // might need to change these as we keep working. If nothing else add new ones for like admin and user and such
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .anyRequest().authenticated().and().headers().frameOptions().sameOrigin(); // and().headers().frameOptions().sameOrigin() is to get h2-console to work. Have to set the X-Frame something header otherwise the browser will complain. most of them are deprecated and I have to wrap in a try/catch since the .headers throws an error. there is probably an easier or prettier way than this.
                     } catch (Exception e) {
@@ -53,5 +55,11 @@ public class SecurityConfig {
         provider.setUserDetailsService(userDetailsService);
 
         return provider;
+    }
+
+    // need to get a hold of this, probably to tell it to generate and return tokens eventually? This talks to the AuthenticationProvider
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+       return config.getAuthenticationManager();
     }
 }

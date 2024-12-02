@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -22,6 +23,8 @@ public class UserService {
     @Autowired
     private JWTService jwtService;
 
+    private final UsersDTOMapper usersDTOMapper;
+
     @Autowired
     AuthenticationManager authManager;
 
@@ -30,8 +33,9 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Autowired
-    public UserService(UserRepository userRepo) {
+    public UserService(UserRepository userRepo, UsersDTOMapper usersDTOMapper) {
         this.userRepo = userRepo;
+        this.usersDTOMapper = usersDTOMapper;
     }
 
     // create new user
@@ -47,10 +51,13 @@ public class UserService {
     }
 
     // get a specific user by ID
-    public Optional<Users> getUserById(Long id) throws LibBadRequest {
-        Optional<Users> user = userRepo.findById(id);
+    public Optional<UsersDTO> getUserById(Long id) throws LibBadRequest {
+        Optional<UsersDTO> user = userRepo
+                .findById(id)
+                .map(usersDTOMapper);
 
         if(user.isPresent()) {
+            System.out.println(user.get());
             return user;
         } else {
             throw new LibBadRequest("User not found");

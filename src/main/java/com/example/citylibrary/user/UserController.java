@@ -27,8 +27,8 @@ public class UserController {
 
     // Get user by id
     @GetMapping("/{userId}")
-    public ResponseEntity<Optional<Users>> getUserById(@PathVariable Long userId){
-        Optional<Users> user = userService.getUserById(userId);
+    public ResponseEntity<Optional<UsersDTO>> getUserById(@PathVariable Long userId){
+        Optional<UsersDTO> user = userService.getUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
     // create/register new user

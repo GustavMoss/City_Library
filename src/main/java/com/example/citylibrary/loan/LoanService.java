@@ -5,6 +5,8 @@ import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
+import com.example.citylibrary.user.UsersDTO;
+import com.example.citylibrary.user.UsersDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +22,15 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookService bookService;
     private final UserService userService;
+    private final UsersDTOMapper usersDTOMapper;
 
 
     @Autowired
-    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService) {
+    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService, UsersDTOMapper usersDTOMapper) {
         this.loanRepository = loanRepository;
         this.bookService = bookService;
         this.userService = userService;
+        this.usersDTOMapper = usersDTOMapper;
     }
 
     public List<Loans> getAllLoans() {
@@ -55,10 +59,13 @@ public class LoanService {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<Users> user = userService.getUserById(userId);
+        Optional<UsersDTO> user = userService.getUserById(userId);
 
         if (user.isPresent()) {
-            loan.setUser_id(user.get());
+            // this doesnt throw an error here, but I think it wont run when we hit the end-point. The issue is that setUser_id need an object since its mapped by the ORM and just converting the DTO to a normal users object seems a little finicky but I think it might be the solution
+            // or building a half-assed Users object with the data from the dto as long as it has the ID. Another option could be to have a different service for more internal fetching of data, so the create loan endpoint would use a service that returns a proper User object behind the scenes
+            // but then return a DTO or similiarly sanitized response
+            loan.setUser_id((Users) user.stream().map(u -> new Users()));
         } else {
             throw new LibBadRequest("user not found");
         }

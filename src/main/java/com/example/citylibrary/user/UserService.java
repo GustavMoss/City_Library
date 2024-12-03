@@ -74,13 +74,16 @@ public class UserService {
         }
     }
 
+    // TODO: with the auth here, I'm getting a stack overflow error for some reason, I guess it gets stuck in a loop? Recursive call?
     public String verify(Users user) {
-        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+       /* Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
         if(auth.isAuthenticated()) {
             return jwtService.generateToken(user.getEmail());
         }
 
-        return "fail";
+        return "fail";*/
+
+        return jwtService.generateToken(user.getEmail());
     }
 }

@@ -22,6 +22,8 @@ public class JWTService {
 
     private String secretKey;
 
+    // TODO: check if all of this works with admin users
+
     // constructor mainly to generate the secret key which we sign the JWT with
     public JWTService() {
         try {

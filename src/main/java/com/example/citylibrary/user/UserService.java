@@ -4,6 +4,7 @@ import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.loan.Loans;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -15,9 +16,8 @@ public class UserService {
 
     private final UserRepository userRepo;
 
-    // init the password encoder, built into spring security. Used to encode password with bcrypt, the strength is the number of rounds
-    // seems very simple to implement.
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepo) {
@@ -26,8 +26,9 @@ public class UserService {
 
     // create new user
     public Users createNewUser(Users user) {
-        // this just runs the password through the encoder and sets the generated hash to the password before saving the user to db.
-        user.setPassword(encoder.encode(user.getPassword()));
+        // this just runs the password through the encoder and sets the generated hash to the password
+        // before saving the user to db.
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setMember_number(generateMemberNumber());
         return userRepo.save(user);
     }

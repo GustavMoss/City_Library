@@ -37,7 +37,7 @@ public class JWTService {
     }
 
     // generates the JWT token
-    public String generateToken(String userEmail) {
+    public String generateToken(String username) {
 
         // specify claims, these we might have to check, a user will have different claims than a admin for instance
         Map<String, Object> claims = new HashMap<>();
@@ -46,9 +46,9 @@ public class JWTService {
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(userEmail)
+                .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -61,8 +61,8 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extraxtUserEmail(String token) {
-        // extract useremail from token (username)
+    public String extractUsername(String token) {
+        // extract useremail from token (username) for users this will be an email. For admins it will be an actual username
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -80,8 +80,8 @@ public class JWTService {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String userEmail = extraxtUserEmail(token);
-        return (userEmail.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {

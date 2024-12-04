@@ -22,18 +22,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
 
-    private CustomUserDetailsService userDetailsService;
-    private AdminUserDetailsService adminUserDetailsService;
-    private JwtFilter jwtFilter;
+    private final CustomUserDetailsService userDetailsService;
+    private final AdminUserDetailsService adminUserDetailsService;
+    private final JwtFilter jwtFilter;
+    private final JWTAdminFilter jwtAdminFilter;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, AdminUserDetailsService adminUserDetailsService, JwtFilter jwtFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, AdminUserDetailsService adminUserDetailsService, JwtFilter jwtFilter, JWTAdminFilter jwtAdminFilter) {
         this.userDetailsService = userDetailsService;
         this.adminUserDetailsService = adminUserDetailsService;
         this.jwtFilter = jwtFilter;
+        this.jwtAdminFilter = jwtAdminFilter;
     }
 
-    // TODO: the access control is a bit busted, most/many end-points are not accessibly by anyone since we haven't defined them here.
+    // TODO: the access control is a bit busted, most/many end-points are not set up correctly.
+    //  Might have to set up 3 matchers? One for admin specific end-points like creating user and so forth and then user specific endpoints like fetching my loans. and then a more general matcher for fetching all the books or something
     @Bean
     @Order(1)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -44,6 +47,7 @@ public class SecurityConfig {
                                 .requestMatchers("/users/register", "/users/login").permitAll() // might need to change these as we keep working. If nothing else add new ones for like admin and user and such
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/books/id").permitAll()
+                                .requestMatchers("/books/").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // TODO: remove before production, only here to get h2-console to work
                 .csrf(AbstractHttpConfigurer::disable) // have to disable csrf for the h2-console to work, get forbidden otherwise. TODO: Remove before production
@@ -64,6 +68,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/admin/login").permitAll() // might need to change these as we keep working. If nothing else add new ones for like admin and user and such
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/create-new-user").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // TODO: remove before production, only here to get h2-console to work
                 .csrf(AbstractHttpConfigurer::disable) // have to disable csrf for the h2-console to work, get forbidden otherwise. TODO: Remove before production
@@ -71,7 +76,7 @@ public class SecurityConfig {
                 .userDetailsService(adminUserDetailsService)
                 .logout(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // save nothing in the session since we are using JWT to auth with, at least that's the idea, seems to break login though
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAdminFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -88,7 +93,7 @@ public class SecurityConfig {
         return provider;
     }*/
 
-    // need to get a hold of this, probably to tell it to generate and return tokens eventually? This talks to the AuthenticationProvider
+    // need to get a hold of this, seems to be only so I can use it later for extra authentication of the user when generating token. Not used right now I think? This talks to the AuthenticationProvider
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

@@ -4,6 +4,7 @@ import com.example.citylibrary.loan.LoanService;
 import com.example.citylibrary.loan.Loans;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,10 @@ public class UserController {
     }
 
     // Get user by id
-    @GetMapping("/{userId}")
-    public ResponseEntity<Optional<Users>> getUserById(@PathVariable Long userId){
-        Optional<Users> user = userService.getUserById(userId);
+    @GetMapping("/{member_number}/{username}")
+    public ResponseEntity<Optional<Users>> getUserByMemberNumberAndUsername
+    (@RequestParam String member_number, @RequestParam String username){
+        Optional<Users> user = userService.getUserByMemberNumber(member_number);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
     // create/register new user
@@ -38,23 +40,23 @@ public class UserController {
     }
 
     // update user info
-    @PutMapping("/{userId}")
-    public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
-        Users updatedUser = userService.updateUserById(userId, user);
+    @PutMapping("/{member_number}/{username}")
+    public ResponseEntity<Users> updateUser(@RequestParam String member_number, @RequestBody @Valid Users user) {
+        Users updatedUser = userService.updateUserByMemberNumber(member_number,  user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     // return all of a users loans both inactive and active
-    @GetMapping("/{userId}/loans")
-    public ResponseEntity<List<Loans>> getAllUserLoansById(@PathVariable Long userId) {
-        List<Loans> userLoans = userService.getLoansByUserId(userId);
+    @GetMapping("/{member_number}/{username}/loans")
+    public ResponseEntity<List<Loans>> getAllUserLoans(@RequestParam Long member_number) {
+        List<Loans> userLoans = userService.getLoansByMemberNumber(member_number);
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
     }
 
     // returns active loans by user id
-    @GetMapping("/{userId}/loans/active")
-    public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
-        List<Loans> userLoans = userService.getLoansByUserId(userId);
+    @GetMapping("/{member_number}/{username}/loans/active")
+    public ResponseEntity<List<Loans>> getActiveUserLoans(@RequestParam Long member_number) {
+        List<Loans> userLoans = userService.getLoansByMemberNumber(member_number);
         /*List<Loans> activeUserLoans = userLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
                 .collect(Collectors.toList());*/
@@ -64,9 +66,9 @@ public class UserController {
     }
 
     // loan a book by calling the loanservice and using its methods
-    @PostMapping("/{userId}/new-loan")
-    public ResponseEntity<Loans> createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
-        Loans newLoan = loanService.createLoan(bookId, userId);
+    @PostMapping("/{member_number}/{username}/new-loan")
+    public ResponseEntity<Loans> createNewLoan(@PathVariable Long member_number,  @RequestParam Long bookId) {
+        Loans newLoan = loanService.createLoan(bookId,member_number);
         return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
     }
 }

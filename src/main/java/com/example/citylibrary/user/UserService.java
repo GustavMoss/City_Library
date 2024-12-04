@@ -24,33 +24,39 @@ public class UserService {
     }
 
     // get a users loans
-    public List<Loans> getLoansByUserId(Long id) {
-        return userRepo.findById(id).get().getLoans();
+    public List<Loans> getLoansByMemberNumber(String memberNumber) throws LibBadRequest {
+        Optional<Users> user = userRepo.findByMemberNumber(memberNumber);
+
+        if (user.isPresent()) {
+            return user.get().getLoans();
+        } else {
+            throw new LibBadRequest("User not found");
+        }
     }
 
     // get a specific user by ID
-    public Optional<Users> getUserById(Long id) throws LibBadRequest {
-        Optional<Users> user = userRepo.findById(id);
+    public Optional<Users> getUserByMemberNumber(String memberNumber) throws LibBadRequest {
+        Optional<Users> user = userRepo.findByMemberNumber(memberNumber);
 
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             return user;
         } else {
             throw new LibBadRequest("User not found");
         }
-
     }
 
     // update a users info
-    public Users updateUserById(Long id, Users user) throws LibBadRequest {
-        Optional<Users> userToUpdate = userRepo.findById(id);
+    public Users updateUserByMemberNumber(String memberNumber, Users user) throws LibBadRequest {
+        Optional<Users> userToUpdate = userRepo.findByMemberNumber(memberNumber);
 
         if (userToUpdate.isPresent()) {
-            userToUpdate.get().setEmail(user.getEmail());
-            userToUpdate.get().setFirst_name(user.getFirst_name());
-            userToUpdate.get().setLast_name(user.getLast_name());
-            userToUpdate.get().setMember_number(user.getMember_number());
+            Users existingUser = userToUpdate.get();
+            existingUser.setEmail(user.getEmail());
+            existingUser.setFirst_name(user.getFirst_name());
+            existingUser.setLast_name(user.getLast_name());
+            existingUser.setMember_number(user.getMember_number());
 
-            return userRepo.save(userToUpdate.get());
+            return userRepo.save(existingUser);
         } else {
             throw new LibBadRequest("Could not find user");
         }

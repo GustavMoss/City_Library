@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -46,5 +47,13 @@ public class SecurityConfig {
         provider.setUserDetailsService(userDetailsService);
 
         return provider;
+    }
+
+    // init the password encoder, built into spring security.
+    // Used to encode password with bcrypt, the strength is the number of rounds
+    // seems very simple to implement.
+    @Bean
+    public PasswordEncoder encoder(){
+        return new BCryptPasswordEncoder(12);
     }
 }

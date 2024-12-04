@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,6 +39,9 @@ public class SecurityConfig {
 
     // TODO: the access control is a bit busted, most/many end-points are not set up correctly.
     //  Might have to set up 3 matchers? One for admin specific end-points like creating user and so forth and then user specific endpoints like fetching my loans. and then a more general matcher for fetching all the books or something
+    // also admins wont have access to the /users endpoints. Which to be fair might be fine. MIght need to specify the specific admin endpoints under /admin/something something though could put them under the admin folder I guess and break them out of user/loan/books then set correct authorities depending on librarian/admin. I guess admin might have access to everythin librarian does, but not vice versa
+    // TODO: need to fix the stackoverflow error as well. Although at the moment it is not being used and it still seem to (somewhat) work. Might not need that bit? Although I guess that would mean that verification method is useless and security is worse.
+
     @Bean
     @Order(1)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -68,7 +73,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/admin/login").permitAll() // might need to change these as we keep working. If nothing else add new ones for like admin and user and such
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers("/create-new-user").hasRole("ADMIN")
+                                .requestMatchers("/admin/create-new-user").hasAuthority("ADMIN")
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // TODO: remove before production, only here to get h2-console to work
                 .csrf(AbstractHttpConfigurer::disable) // have to disable csrf for the h2-console to work, get forbidden otherwise. TODO: Remove before production
@@ -84,14 +89,14 @@ public class SecurityConfig {
     // TODO: is this needed?
     // this will compare passwords as far as I understand. The daoauth provider is needed to get the info from database
     // and then we set the passwordencoder and set a userdetailsservice that we've customized to fit our need. In this to get the email instead of username even though it's called by username in the userdetails interface, so a bit confusing.
-    /*@Bean
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setUserDetailsService(userDetailsService);
 
         return provider;
-    }*/
+    }
 
     // need to get a hold of this, seems to be only so I can use it later for extra authentication of the user when generating token. Not used right now I think? This talks to the AuthenticationProvider
     @Bean

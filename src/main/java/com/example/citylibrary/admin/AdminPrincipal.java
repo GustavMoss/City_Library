@@ -18,7 +18,7 @@ public class AdminPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // TODO: fetch roles/permissions from DB. Currently there are 2.
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        return Collections.singleton(new SimpleGrantedAuthority(admin.getRole()));
     }
 
     @Override

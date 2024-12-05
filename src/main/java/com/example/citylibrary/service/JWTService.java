@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
@@ -21,8 +20,6 @@ import java.util.function.Function;
 public class JWTService {
 
     private String secretKey;
-
-    // TODO: check if all of this works with admin users
 
     // constructor mainly to generate the secret key which we sign the JWT with
     public JWTService() {
@@ -39,7 +36,7 @@ public class JWTService {
     // generates the JWT token
     public String generateToken(String username) {
 
-        // specify claims, these we might have to check, a user will have different claims than a admin for instance
+        // specify claims, I believe we can choose to encode custom stuff into the JWT with this.
         Map<String, Object> claims = new HashMap<>();
 
         // builds the JWT

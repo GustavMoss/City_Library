@@ -25,8 +25,6 @@ public class UserService {
     @Autowired
     AuthenticationManager authManager;
 
-    // init the password encoder, built into spring security. Used to encode password with bcrypt, the strength is the number of rounds
-    // seems very simple to implement.
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Autowired
@@ -34,9 +32,8 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    // create new user
+    // create new user, with hashed password
     public Users createNewUser(Users user) {
-        // this just runs the password through the encoder and sets the generated hash to the password before saving the user to db.
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepo.save(user);
     }

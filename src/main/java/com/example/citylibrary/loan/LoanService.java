@@ -42,7 +42,6 @@ public class LoanService {
 
         Loans loan = new Loans();
 
-        // TODO: take another look at the error handling, not printing out the message. Might need to use try/catch?
         Optional<Books> book = bookService.getBookById(bookId);
 
         if (book.isPresent()) {

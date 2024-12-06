@@ -42,7 +42,7 @@ public class SecurityConfig {
     // also admins wont have access to the /users endpoints. Which to be fair might be fine. MIght need to specify the specific admin endpoints under /admin/something something though could put them under the admin folder I guess and break them out of user/loan/books then set correct authorities depending on librarian/admin. I guess admin might have access to everythin librarian does, but not vice versa
     // TODO: need to fix the stackoverflow error as well. Although at the moment it is not being used and it still seem to (somewhat) work. Might not need that bit? Although I guess that would mean that verification method is useless and security is worse.
     // TODO: accessing some of the user endpoints seems a bit weird, getting Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Method parameter 'userId': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "login"] errors. I guess it's expecting a userId and a GET request?
-    // might need to try testing that a bit more. 
+    // might need to try testing that a bit more.
     @Bean
     @Order(1)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -52,12 +52,9 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/users/register", "/users/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .requestMatchers("/books/id").permitAll()
-                                .requestMatchers("/books/").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .csrf(AbstractHttpConfigurer::disable) //
-                .logout(Customizer.withDefaults())
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -78,9 +75,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults())
                 .userDetailsService(adminUserDetailsService)
-                .logout(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAdminFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -88,14 +83,14 @@ public class SecurityConfig {
     }
 
     // TODO: is this needed?
-    @Bean
+    /*@Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setUserDetailsService(userDetailsService);
 
         return provider;
-    }
+    }*/
 
 
     @Bean

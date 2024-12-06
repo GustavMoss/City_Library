@@ -28,6 +28,7 @@ public class LoanController {
         this.loanService = loanService;
     }
 
+    // TODO: take a look at these endpoints, some of these might not need to be/ should not be exposed to users?
     @GetMapping
     public ResponseEntity<List<Loans>> getAllLoans() {
         List<Loans> loans = loanService.getAllLoans();
@@ -58,9 +59,10 @@ public class LoanController {
         return new ResponseEntity<>(loanDate, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    // FIXME: moved to admin, delete when safe
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<String> deleteLoan(@PathVariable Long id) {
         loanService.deleteLoan(id);
         return ResponseEntity.ok("Successfully deleted the loan");
-    }
+    }*/
 }

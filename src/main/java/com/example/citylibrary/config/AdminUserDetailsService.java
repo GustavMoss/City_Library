@@ -20,8 +20,8 @@ public class AdminUserDetailsService implements UserDetailsService {
         Admins admin = adminRepo.findByUsername(username);
 
         if (admin == null) {
-            System.out.println("Admin not found");
-            throw new UsernameNotFoundException("Admin not found");
+            System.out.println("Admin not found or You do not have permissions to view this");
+            throw new UsernameNotFoundException("Admin not found or You do not have permissions to view this");
         }
         return new AdminPrincipal(admin);
     }

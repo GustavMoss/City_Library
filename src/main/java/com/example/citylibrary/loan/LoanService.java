@@ -6,12 +6,16 @@ import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,6 +35,14 @@ public class LoanService {
 
     public List<Loans> getAllLoans() {
         return loanRepository.findAll();
+    }
+
+    public ResponseEntity<List<Loans>> getAllActiveLoans() {
+        List<Loans> allLoans = loanRepository.findAll();
+
+        return new ResponseEntity<>(allLoans.stream()
+                .filter(loan -> loan.getReturned_date() == null)
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     public Optional<Loans> getLoanById(Long id) {

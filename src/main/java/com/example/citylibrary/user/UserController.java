@@ -31,24 +31,28 @@ public class UserController {
         Optional<Users> user = userService.getUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
+    // FIXME: moved to admin, delete this when safe
     // create/register new user
-    @PostMapping("/register")
+    /*@PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
-    }
+    }*/
 
+    // FIXME: move this from here to a more general end-point?`(/login instead of /users/login)
     // login end-point
     @PostMapping("/login")
     public String login(@RequestBody Users user) {
         return userService.verify(user);
     }
 
+    // FIXME: moved to admin, delete this when safe
     // update user info
-    @PutMapping("/{userId}")
+   /* @PutMapping("/{userId}")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
         Users updatedUser = userService.updateUserById(userId, user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    }
+    }*/
 
     // return all of a users loans both inactive and active
     @GetMapping("/{userId}/loans")
@@ -57,13 +61,11 @@ public class UserController {
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
     }
 
+    // FIXME: moved to admin as well, does a user need this? Probably right? to check their own active loans
     // returns active loans by user id
     @GetMapping("/{userId}/loans/active")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
-        /*List<Loans> activeUserLoans = userLoans.stream()
-                .filter(loan -> loan.getReturned_date() == null)
-                .collect(Collectors.toList());*/
         return new ResponseEntity<>(userLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
                 .collect(Collectors.toList()), HttpStatus.OK);

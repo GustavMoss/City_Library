@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,18 +28,21 @@ public class UserAdminController {
 
     // create/register new user
     @PostMapping("/register")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
     // update existing user
     @PutMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
         Users updatedUser = userService.updateUserById(userId, user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/active-loans")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans.stream()

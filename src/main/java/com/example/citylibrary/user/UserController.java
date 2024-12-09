@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class UserController {
 
     // Get user by id
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<Optional<Users>> getUserById(@PathVariable Long userId){
         Optional<Users> user = userService.getUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -39,7 +41,7 @@ public class UserController {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }*/
 
-    // FIXME: move this from here to a more general end-point?`(/login instead of /users/login)
+    // FIXME: move this from here to a more general end-point?`(/login instead of /users/login) To be fair the end result would most likely be the same, the URL would be the only difference?
     // login end-point
     @PostMapping("/login")
     public String login(@RequestBody Users user) {
@@ -56,6 +58,7 @@ public class UserController {
 
     // return all of a users loans both inactive and active
     @GetMapping("/{userId}/loans")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<Loans>> getAllUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
@@ -64,6 +67,7 @@ public class UserController {
     // FIXME: moved to admin as well, does a user need this? Probably right? to check their own active loans
     // returns active loans by user id
     @GetMapping("/{userId}/loans/active")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans.stream()
@@ -73,6 +77,7 @@ public class UserController {
 
     // loan a book by calling the loanservice and using its methods
     @PostMapping("/{userId}/new-loan")
+    @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<Loans> createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
         Loans newLoan = loanService.createLoan(bookId, userId);
         return new ResponseEntity<>(newLoan, HttpStatus.CREATED);

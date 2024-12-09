@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -23,24 +24,29 @@ public class BooksAdminController {
     }
 
     @GetMapping("/{bookId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+
     public ResponseEntity<Optional<Books>> getBookById(@PathVariable Long bookId) {
         Optional<Books> book = bookService.getBookById(bookId);
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
     @PostMapping("/add-book")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Books> addNewBook(@RequestBody @Valid Books book) {
         Books newBook = bookService.addBook(book);
         return new ResponseEntity<>(book, HttpStatus.CREATED);
     }
 
     @PutMapping("/update-book/{bookId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Books> updateBook(@PathVariable @Valid Long bookId, @RequestBody Books books) {
         Books updatedBook = bookService.updateBook(books, bookId);
         return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }
 
     @DeleteMapping("/{bookId}/delete-book")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<String> deleteBook(@PathVariable Long bookId) {
         try {
             boolean isDeleted = bookService.deleteBook(bookId);

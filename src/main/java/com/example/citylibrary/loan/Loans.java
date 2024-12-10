@@ -2,6 +2,7 @@ package com.example.citylibrary.loan;
 
 
 import com.example.citylibrary.book.Books;
+import com.example.citylibrary.user.UserDTO;
 import com.example.citylibrary.user.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

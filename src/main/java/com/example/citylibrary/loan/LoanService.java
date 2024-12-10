@@ -3,6 +3,7 @@ package com.example.citylibrary.loan;
 import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
+import com.example.citylibrary.user.UserDTO;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +67,12 @@ public class LoanService {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<Users> user = userService.getUserById(userId);
+        Optional<UserDTO> user = userService.getUserById(userId);
 
         if (user.isPresent()) {
-            loan.setUser_id(user.get());
+           // loan.setUser_id(user.get());
+            // FIXME: getUserById now returns a DTO. The loan object expects a Users object. Map the DTO back to a user object? or just make loan expect a DTO in the first place?( tried this but didn't seem to take, but to be fair I tried for like 5 min)
+            System.out.println("Nobody here but us chickens");
         } else {
             throw new LibBadRequest("user not found");
         }

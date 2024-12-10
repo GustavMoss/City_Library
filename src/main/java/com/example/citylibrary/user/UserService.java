@@ -16,20 +16,20 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
+
     private final UserRepository userRepo;
+    private final UserDTOMapper userDTOMapper;
+    private final JWTService jwtService;
 
-    @Autowired
-    private JWTService jwtService;
-
-    @Autowired
     AuthenticationManager authManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
     @Autowired
-    public UserService(UserRepository userRepo) {
+    public UserService(UserRepository userRepo, UserDTOMapper userDTOMapper, JWTService jwtService) {
         this.userRepo = userRepo;
+        this.userDTOMapper = userDTOMapper;
+        this.jwtService = jwtService;
     }
 
     // create new user, with hashed password
@@ -44,8 +44,8 @@ public class UserService {
     }
 
     // get a specific user by ID
-    public Optional<Users> getUserById(Long id) throws LibBadRequest {
-        Optional<Users> user = userRepo.findById(id);
+    public Optional<UserDTO> getUserById(Long id) throws LibBadRequest {
+        Optional<UserDTO> user = userRepo.findById(id).map(userDTOMapper);
 
         if(user.isPresent()) {
             return user;

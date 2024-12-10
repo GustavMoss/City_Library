@@ -27,19 +27,20 @@ public class UserController {
     }
 
     // Get user by id
+    // FIXME: should user have access to this? I'd assume we'd need something like this to say print out a users info on their userpage or something, maybe as long as we strictly control the data being sent it's fine?
     @GetMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('USER')")
-    public ResponseEntity<Optional<Users>> getUserById(@PathVariable Long userId){
-        Optional<Users> user = userService.getUserById(userId);
+    public ResponseEntity<Optional<UserDTO>> getUserById(@PathVariable Long userId){
+        Optional<UserDTO> user = userService.getUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // FIXME: moved to admin, delete this when safe
+    // FIXME: moved to admin, but might want to keep it here as well? Users should be able to create an account by themselves??
     // create/register new user
-    /*@PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
-    }*/
+    }
 
     // FIXME: move this from here to a more general end-point?`(/login instead of /users/login) To be fair the end result would most likely be the same, the URL would be the only difference?
     // login end-point

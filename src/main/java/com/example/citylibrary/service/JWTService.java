@@ -52,6 +52,7 @@ public class JWTService {
 
     }
 
+    // FIXME: look at jwt parser/parserbuilder to do some of this instead. Probably wont matter functionally but might be a bit more cohesive
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 

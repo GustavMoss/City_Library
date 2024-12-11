@@ -25,7 +25,6 @@ public class BooksAdminController {
 
     @GetMapping("/{bookId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
-
     public ResponseEntity<Optional<Books>> getBookById(@PathVariable Long bookId) {
         Optional<Books> book = bookService.getBookById(bookId);
         return new ResponseEntity<>(book, HttpStatus.OK);

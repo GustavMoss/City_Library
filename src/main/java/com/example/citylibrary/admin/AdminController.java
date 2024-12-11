@@ -1,5 +1,6 @@
 package com.example.citylibrary.admin;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,7 @@ public class AdminController {
 
     // login for admins
     @PostMapping("/login")
-    public String login(@RequestBody Admins admin) {
+    public String login(@RequestBody @Valid Admins admin) {
         return adminService.verify(admin);
     }
 }

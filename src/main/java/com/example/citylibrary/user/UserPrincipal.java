@@ -15,7 +15,6 @@ public class UserPrincipal implements UserDetails {
         this.user = user;
     }
 
-    // do we need another one of these for admin? might also want to refactor some of the endpoint and move some of them to admin.
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("USER"));

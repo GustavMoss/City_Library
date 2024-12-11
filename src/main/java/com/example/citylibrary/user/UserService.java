@@ -3,8 +3,11 @@ package com.example.citylibrary.user;
 import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.loan.Loans;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,12 +17,19 @@ public class UserService {
     private final UserRepository userRepo;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     public UserService(UserRepository userRepo) {
         this.userRepo = userRepo;
     }
 
     // create new user
     public Users createNewUser(Users user) {
+        // this just runs the password through the encoder and sets the generated hash to the password
+        // before saving the user to db.
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setMember_number(generateMemberNumber());
         return userRepo.save(user);
     }
 
@@ -60,5 +70,19 @@ public class UserService {
         } else {
             throw new LibBadRequest("Could not find user");
         }
+    }
+
+    public String generateMemberNumber(){
+        String latestMemberNumber = userRepo.findLastMemberNumber();
+        String prefix = "M";
+        String currentYear = String.valueOf(LocalDate.now().getYear());
+
+        if (latestMemberNumber == null || !latestMemberNumber.contains(currentYear)){
+            return prefix + currentYear + String.format("%05d", 1);
+        }
+            String sequencePart = latestMemberNumber.substring(5);
+            int newSequence = Integer.parseInt(sequencePart) + 1;
+
+            return prefix + currentYear + String.format("%05d", newSequence);
     }
 }

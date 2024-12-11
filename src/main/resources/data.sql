@@ -100,6 +100,10 @@ CREATE TABLE IF NOT EXISTS users
 (
     255
 ) NOT NULL UNIQUE,
+    password VARCHAR
+(
+    255
+) NOT NULL,
     member_number VARCHAR
 (
     10
@@ -234,14 +238,14 @@ VALUES (1, 5), -- Pippi: Children
        (10, 4);
 -- Mrs. Dalloway: Classic
 -- Populate users
-INSERT INTO users (user_id, first_name, last_name, email,
+INSERT INTO users (user_id, first_name, last_name, email, password,
                    member_number)
-VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com', 'M20230001'),
-       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com', 'M20230002'),
-       (3, 'Maria', 'Svensson', 'maria.svensson@email.com', 'M20230003'),
-       (4, 'Johan', 'Johansson', 'johan.johansson@email.com',
+VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com', '123', 'M20230001'),
+       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com', '123', 'M20230002'),
+       (3, 'Maria', 'Svensson', 'maria.svensson@email.com', '123', 'M20230003'),
+       (4, 'Johan', 'Johansson', 'johan.johansson@email.com', '123',
         'M20230004'),
-       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', 'M20230005');
+       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', '123', 'M20230005');
 -- Populate loans
 INSERT INTO loans (loan_id, book_id, user_id, loan_date, due_date,
                    returned_date)

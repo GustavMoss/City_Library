@@ -36,6 +36,10 @@ public class Users {
     @Email(message = "Email must be valid email")
     private String email;
 
+    // added this for the db and to be able to encrypt and so on. We'll need it.
+    @NotBlank(message = "Password cannot be empty")
+    private String password;
+
     @NotBlank(message = "Member-number cannot be empty")
     private String member_number;
 

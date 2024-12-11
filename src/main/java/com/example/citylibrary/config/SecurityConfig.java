@@ -12,8 +12,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+//import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -21,6 +22,11 @@ public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Bean
+    public CustomPasswordEncoder passwordEncoder(){
+        return new CustomPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,9 +47,9 @@ public class SecurityConfig {
     // this will compare passwords as far as I understand. The daoauth provider is needed to get the info from database
     // and then we set the passwordencoder and set a userdetailsservice that we've customized to fit our need. In this to get the email instead of username even though it's called by username in the userdetails interface, so a bit confusing.
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(CustomPasswordEncoder customPasswordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(customPasswordEncoder.getPasswordEncoder());
         provider.setUserDetailsService(userDetailsService);
 
         return provider;
@@ -52,8 +58,10 @@ public class SecurityConfig {
     // init the password encoder, built into spring security.
     // Used to encode password with bcrypt, the strength is the number of rounds
     // seems very simple to implement.
+    /*
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder(12);
-    }
+    }*/
+
 }

@@ -8,19 +8,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
 
-
     private final UserRepository userRepo;
     private final UserDTOMapper userDTOMapper;
     private final JWTService jwtService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     AuthenticationManager authManager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
@@ -34,7 +37,10 @@ public class UserService {
 
     // create new user, with hashed password
     public Users createNewUser(Users user) {
-        user.setPassword(encoder.encode(user.getPassword()));
+        // this just runs the password through the encoder and sets the generated hash to the password
+        // before saving the user to db.
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setMember_number(generateMemberNumber());
         return userRepo.save(user);
     }
 
@@ -69,6 +75,20 @@ public class UserService {
         } else {
             throw new LibBadRequest("Could not find user");
         }
+    }
+
+    public String generateMemberNumber(){
+        String latestMemberNumber = userRepo.findLastMemberNumber();
+        String prefix = "M";
+        String currentYear = String.valueOf(LocalDate.now().getYear());
+
+        if (latestMemberNumber == null || !latestMemberNumber.contains(currentYear)){
+            return prefix + currentYear + String.format("%05d", 1);
+        }
+            String sequencePart = latestMemberNumber.substring(5);
+            int newSequence = Integer.parseInt(sequencePart) + 1;
+
+            return prefix + currentYear + String.format("%05d", newSequence);
     }
 
     // TODO: with the auth here, I'm getting a stack overflow error for some reason, I guess it gets stuck in a loop? Recursive call?

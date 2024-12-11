@@ -105,4 +105,12 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
+
+    // init the password encoder, built into spring security.
+    // Used to encode password with bcrypt, the strength is the number of rounds
+    // seems very simple to implement.
+    @Bean
+    public PasswordEncoder encoder(){
+        return new BCryptPasswordEncoder(12);
+    }
 }

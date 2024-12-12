@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,10 +35,10 @@ public class SecurityConfig{
         this.jwtAdminFilter = jwtAdminFilter;
     }
 
-    @Bean
+    /*@Bean
     public CustomPasswordEncoder passwordEncoder(){
         return new CustomPasswordEncoder();
-    }
+    }*/
 
     @Bean
     @Order(1)
@@ -89,6 +91,12 @@ public class SecurityConfig{
         authenticationManagerBuilder.userDetailsService(userDetailsService);
         authenticationManagerBuilder.userDetailsService(adminUserDetailsService);
         return authenticationManagerBuilder.build();
+    }
+
+    // TODO: need this for login, take a look at trying to figure this out with our custom one? Seems like the custom encoder breaks login, I guess it's not validating properly since it was built on the old login?
+    @Bean
+    public PasswordEncoder encoder(){
+        return new BCryptPasswordEncoder(12);
     }
 
 }

@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,9 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
-
+@EnableMethodSecurity()
+public class SecurityConfig{
 
     private final CustomUserDetailsService userDetailsService;
     private final AdminUserDetailsService adminUserDetailsService;
@@ -39,12 +35,6 @@ public class SecurityConfig {
         this.jwtAdminFilter = jwtAdminFilter;
     }
 
-    // TODO: the access control is a bit busted, most/many end-points are not set up correctly.
-    //  Might have to set up 3 matchers? One for admin specific end-points like creating user and so forth and then user specific endpoints like fetching my loans. and then a more general matcher for fetching all the books or something
-    // also admins wont have access to the /users endpoints. Which to be fair might be fine. MIght need to specify the specific admin endpoints under /admin/something something though could put them under the admin folder I guess and break them out of user/loan/books then set correct authorities depending on librarian/admin. I guess admin might have access to everythin librarian does, but not vice versa
-    // TODO: need to fix the stackoverflow error as well. Although at the moment it is not being used and it still seem to (somewhat) work. Might not need that bit? Although I guess that would mean that verification method is useless and security is worse.
-    // TODO: accessing some of the user endpoints seems a bit weird, getting Resolved [org.springframework.web.method.annotation.MethodArgumentTypeMismatchException: Method parameter 'userId': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: "login"] errors. I guess it's expecting a userId and a GET request?
-    // might need to try testing that a bit more.
     @Bean
     @Order(1)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -84,27 +74,19 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // TODO: is this needed?
-    /*@Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(userDetailsService);
-
-        return provider;
-    }*/
-
-
+    // after some more research it seems the issue is that since I have 2 userdetailsservices the authmanager doesnt know which one to use so it tries creating a basic one (lazy init?) and that doesn't work so it tries again and then just gets stuck in a loop
+    // so I have to create a custom authmanager/tell it too use 2 authproviders/userdetailsservices.
+    // So that is what this authmangagerbuilder is doing, it just tells the AUthenticationManager to use both userdetails, it will go through them by itself.
+    // https://stackoverflow.com/a/74706573
+    // https://www.baeldung.com/spring-security-multiple-auth-providers
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService);
+        authenticationManagerBuilder.userDetailsService(adminUserDetailsService);
+        return authenticationManagerBuilder.build();
     }
 
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
 
     // init the password encoder, built into spring security.
     // Used to encode password with bcrypt, the strength is the number of rounds

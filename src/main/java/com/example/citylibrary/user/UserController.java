@@ -35,7 +35,7 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // FIXME: moved to admin, but might want to keep it here as well? Users should be able to create an account by themselves??
+    // FIXME: moved to admin, but might want to keep it here as well? Users should be able to create an account by themselves?
     // create/register new user
     @PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {

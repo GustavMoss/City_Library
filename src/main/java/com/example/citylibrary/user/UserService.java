@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +21,20 @@ public class UserService {
     private final UserRepository userRepo;
     private final UserDTOMapper userDTOMapper;
     private final JWTService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authManager;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-    AuthenticationManager authManager;
-
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
-
-    @Autowired
-    public UserService(UserRepository userRepo, UserDTOMapper userDTOMapper, JWTService jwtService) {
+    public UserService(UserRepository userRepo, UserDTOMapper userDTOMapper, JWTService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authManager) {
         this.userRepo = userRepo;
         this.userDTOMapper = userDTOMapper;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.authManager = authManager;
     }
 
     // create new user, with hashed password
     public Users createNewUser(Users user) {
-        // this just runs the password through the encoder and sets the generated hash to the password
-        // before saving the user to db.
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setMember_number(generateMemberNumber());
         return userRepo.save(user);
@@ -91,16 +87,14 @@ public class UserService {
             return prefix + currentYear + String.format("%05d", newSequence);
     }
 
-    // TODO: with the auth here, I'm getting a stack overflow error for some reason, I guess it gets stuck in a loop? Recursive call?
     public String verify(Users user) {
-       /* Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
         if(auth.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(auth);
             return jwtService.generateToken(user.getEmail());
         }
 
-        return "fail";*/
-
-        return jwtService.generateToken(user.getEmail());
+        return "failed to verify user";
     }
 }

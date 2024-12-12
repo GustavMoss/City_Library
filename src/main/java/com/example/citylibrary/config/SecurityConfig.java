@@ -12,8 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -36,6 +34,11 @@ public class SecurityConfig{
     }
 
     @Bean
+    public CustomPasswordEncoder passwordEncoder(){
+        return new CustomPasswordEncoder();
+    }
+
+    @Bean
     @Order(1)
     public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
         http.
@@ -54,6 +57,8 @@ public class SecurityConfig{
         return http.build();
     }
 
+
+
     @Bean
     @Order(2)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -63,7 +68,6 @@ public class SecurityConfig{
                         auth
                                 .requestMatchers("/admin/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
-                                //.requestMatchers("/admin/create-new-user").hasAuthority("ADMIN")
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -87,12 +91,4 @@ public class SecurityConfig{
         return authenticationManagerBuilder.build();
     }
 
-
-    // init the password encoder, built into spring security.
-    // Used to encode password with bcrypt, the strength is the number of rounds
-    // seems very simple to implement.
-    @Bean
-    public PasswordEncoder encoder(){
-        return new BCryptPasswordEncoder(12);
-    }
 }

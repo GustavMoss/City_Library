@@ -33,19 +33,20 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @PostMapping
+    // FIXME: below endpoints moved to admin, delete here when safe
+    /*@PostMapping
     public ResponseEntity<Books> addBook(@RequestBody @Valid Books books) {
         Books book = bookService.addBook(books);
         return new ResponseEntity<>(book, HttpStatus.CREATED);
-    }
+    }*/
 
-    @PutMapping("/{id}")
+    /*@PutMapping("/{id}")
     public ResponseEntity<Books> updateBook(@PathVariable @Valid Long id, @RequestBody Books books) {
         Books updatedBook = bookService.updateBook(books, id);
         return new ResponseEntity<>(updatedBook, HttpStatus.OK);
-    }
+    }*/
 
-    @DeleteMapping("/{id}")
+   /* @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Long id) {
         try {
             boolean isDeleted = bookService.deleteBook(id);
@@ -59,5 +60,5 @@ public class BookController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
         }
-    }
+    }*/
 }

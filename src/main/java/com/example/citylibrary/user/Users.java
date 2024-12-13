@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import lombok.*;
 
 import java.util.List;
@@ -36,7 +34,6 @@ public class Users {
     @Email(message = "Email must be valid email")
     private String email;
 
-    // added this for the db and to be able to encrypt and so on. We'll need it.
     @NotBlank(message = "Password cannot be empty")
     private String password;
 

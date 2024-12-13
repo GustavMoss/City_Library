@@ -1,4 +1,4 @@
-package com.example.citylibrary.user;
+package com.example.citylibrary.admin;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,27 +7,27 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-public class UserPrincipal implements UserDetails {
+public class AdminPrincipal implements UserDetails {
 
-    private Users user;
+    private Admins admin;
 
-    public UserPrincipal(Users user) {
-        this.user = user;
+    public AdminPrincipal(Admins admin) {
+        this.admin = admin;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return Collections.singleton(new SimpleGrantedAuthority(admin.getRole()));
     }
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return admin.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return admin.getUsername();
     }
 
     @Override

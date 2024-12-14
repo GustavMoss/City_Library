@@ -1,5 +1,6 @@
 package com.example.citylibrary.user;
 
+import com.example.citylibrary.constraints.ValidPassword;
 import com.example.citylibrary.loan.Loans;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,6 +36,7 @@ public class Users {
     private String email;
 
     @NotBlank(message = "Password cannot be empty")
+    @ValidPassword
     private String password;
 
     @NotBlank(message = "Member-number cannot be empty")

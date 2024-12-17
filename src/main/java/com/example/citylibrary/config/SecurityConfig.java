@@ -3,68 +3,100 @@ package com.example.citylibrary.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@EnableMethodSecurity()
+public class SecurityConfig{
+
+    private final CustomUserDetailsService userDetailsService;
+    private final AdminUserDetailsService adminUserDetailsService;
+    private final JwtFilter jwtFilter;
+    private final JWTAdminFilter jwtAdminFilter;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    public SecurityConfig(CustomUserDetailsService userDetailsService, AdminUserDetailsService adminUserDetailsService, JwtFilter jwtFilter, JWTAdminFilter jwtAdminFilter) {
+        this.userDetailsService = userDetailsService;
+        this.adminUserDetailsService = adminUserDetailsService;
+        this.jwtFilter = jwtFilter;
+        this.jwtAdminFilter = jwtAdminFilter;
+    }
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    /*@Bean
+    public CustomPasswordEncoder passwordEncoder(){
+        return new CustomPasswordEncoder();
+    }*/
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http) throws Exception {
         http.
-                authorizeHttpRequests(auth ->
-                {
-
-                    try {
+                securityMatcher("/users/**")
+                .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/users/register", "/users/login").permitAll() // might need to change these as we keep working. If nothing else add new ones for like admin and user and such
+                                .requestMatchers("/users/register", "/users/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
-                                .anyRequest().authenticated().and().headers().frameOptions().sameOrigin(); // and().headers().frameOptions().sameOrigin() is to get h2-console to work. Have to set the X-Frame something header otherwise the browser will complain. most of them are deprecated and I have to wrap in a try/catch since the .headers throws an error. there is probably an easier or prettier way than this.
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-
-                .csrf(AbstractHttpConfigurer::disable) // have to disable csrf for the h2-console to work, get forbidden otherwise.
-                .formLogin(Customizer.withDefaults())
-                .logout(Customizer.withDefaults())
+                                .anyRequest().authenticated())
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .csrf(AbstractHttpConfigurer::disable) //
+                .userDetailsService(userDetailsService)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // this will compare passwords as far as I understand. The daoauth provider is needed to get the info from database
-    // and then we set the passwordencoder and set a userdetailsservice that we've customized to fit our need. In this to get the email instead of username even though it's called by username in the userdetails interface, so a bit confusing.
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(userDetailsService);
 
-        return provider;
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.
+                securityMatcher("/admin/**")
+                .authorizeHttpRequests(auth ->
+                        auth
+                                .requestMatchers("/admin/login").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll()
+                                .anyRequest().authenticated())
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .csrf(AbstractHttpConfigurer::disable)
+                .userDetailsService(adminUserDetailsService)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAdminFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 
-    // need to get a hold of this, probably to tell it to generate and return tokens eventually? This talks to the AuthenticationProvider
+    // after some more research it seems the issue is that since I have 2 userdetailsservices the authmanager doesnt know which one to use so it tries creating a basic one (lazy init?) and that doesn't work so it tries again and then just gets stuck in a loop
+    // so I have to create a custom authmanager/tell it too use 2 authproviders/userdetailsservices.
+    // So that is what this authmangagerbuilder is doing, it just tells the AUthenticationManager to use both userdetails, it will go through them by itself.
+    // https://stackoverflow.com/a/74706573
+    // https://www.baeldung.com/spring-security-multiple-auth-providers
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-       return config.getAuthenticationManager();
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService);
+        authenticationManagerBuilder.userDetailsService(adminUserDetailsService);
+        return authenticationManagerBuilder.build();
     }
+
+    // TODO: need this for login, take a look at trying to figure this out with our custom one? Seems like the custom encoder breaks login, I guess it's not validating properly since it was built on the old login?
+    @Bean
+    public PasswordEncoder encoder(){
+        return new BCryptPasswordEncoder(12);
+    }
+
 }

@@ -240,12 +240,12 @@ VALUES (1, 5), -- Pippi: Children
 -- Populate users
 INSERT INTO users (user_id, first_name, last_name, email, password,
                    member_number)
-VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com', '$2y$12$Nnvnsjgce.1QxSrD2m.dPOKMYRcA5l/wrKGSNDsxSLgjCVxmuITxe', 'M20230001'),
-       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com', '$2y$12$Nnvnsjgce.1QxSrD2m.dPOKMYRcA5l/wrKGSNDsxSLgjCVxmuITxe', 'M20230002'),
-       (3, 'Maria', 'Svensson', 'maria.svensson@email.com', '$2y$12$Nnvnsjgce.1QxSrD2m.dPOKMYRcA5l/wrKGSNDsxSLgjCVxmuITxe', 'M20230003'),
-       (4, 'Johan', 'Johansson', 'johan.johansson@email.com', '$2y$12$Nnvnsjgce.1QxSrD2m.dPOKMYRcA5l/wrKGSNDsxSLgjCVxmuITxe',
+VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com', '123', 'M20230001'),
+       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com', '123', 'M20230002'),
+       (3, 'Maria', 'Svensson', 'maria.svensson@email.com', '123', 'M20230003'),
+       (4, 'Johan', 'Johansson', 'johan.johansson@email.com', '123',
         'M20230004'),
-       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', '$2y$12$Nnvnsjgce.1QxSrD2m.dPOKMYRcA5l/wrKGSNDsxSLgjCVxmuITxe', 'M20230005');
+       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', '123', 'M20230005');
 -- Populate loans
 INSERT INTO loans (loan_id, book_id, user_id, loan_date, due_date,
                    returned_date)
@@ -257,6 +257,6 @@ VALUES (1, 2, 1, '2024-01-15', '2024-02-15', NULL),
        (6, 6, 1, '2023-12-25', '2024-01-25', '2024-01-23');
 -- Populate admins
 INSERT INTO admins (admin_id, username, password, role)
-VALUES (1, 'admin', 'admin123', 'ADMIN'),
-       (2, 'lisa', 'lisa123', 'LIBRARIAN'),
+VALUES (1, 'admin', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 'ADMIN'),
+       (2, 'lisa', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 'LIBRARIAN'),
        (3, 'lars', 'lars123', 'LIBRARIAN');

@@ -3,17 +3,21 @@ package com.example.citylibrary.loan;
 import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
+import com.example.citylibrary.user.UserDTO;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
-import com.example.citylibrary.user.UsersDTO;
 import com.example.citylibrary.user.UsersDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -37,6 +41,14 @@ public class LoanService {
         return loanRepository.findAll();
     }
 
+    public ResponseEntity<List<Loans>> getAllActiveLoans() {
+        List<Loans> allLoans = loanRepository.findAll();
+
+        return new ResponseEntity<>(allLoans.stream()
+                .filter(loan -> loan.getReturned_date() == null)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
     public Optional<Loans> getLoanById(Long id) {
 
         return loanRepository.findById(id);
@@ -46,7 +58,6 @@ public class LoanService {
 
         Loans loan = new Loans();
 
-        // TODO: take another look at the error handling, not printing out the message. Might need to use try/catch?
         Optional<Books> book = bookService.getBookById(bookId);
 
         if (book.isPresent()) {
@@ -59,13 +70,12 @@ public class LoanService {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<UsersDTO> user = userService.getUserById(userId);
+        Optional<UserDTO> user = userService.getUserById(userId);
 
         if (user.isPresent()) {
-            // this doesnt throw an error here, but I think it wont run when we hit the end-point. The issue is that setUser_id need an object since its mapped by the ORM and just converting the DTO to a normal users object seems a little finicky but I think it might be the solution
-            // or building a half-assed Users object with the data from the dto as long as it has the ID. Another option could be to have a different service for more internal fetching of data, so the create loan endpoint would use a service that returns a proper User object behind the scenes
-            // but then return a DTO or similiarly sanitized response
-            loan.setUser_id((Users) user.stream().map(u -> new Users()));
+           // loan.setUser_id(user.get());
+            // FIXME: getUserById now returns a DTO. The loan object expects a Users object. Map the DTO back to a user object? or just make loan expect a DTO in the first place?( tried this but didn't seem to take, but to be fair I tried for like 5 min)
+            System.out.println("Nobody here but us chickens");
         } else {
             throw new LibBadRequest("user not found");
         }

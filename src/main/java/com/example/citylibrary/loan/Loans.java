@@ -1,20 +1,17 @@
 package com.example.citylibrary.loan;
 
 
-import java.time.LocalDate;
-
 import com.example.citylibrary.book.Books;
+import com.example.citylibrary.user.UserDTO;
 import com.example.citylibrary.user.Users;
-
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-
-import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 
 @Entity

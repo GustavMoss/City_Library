@@ -47,10 +47,13 @@ public class UserService {
 
     // get a specific user by ID
     public Optional<UserDTO> getUserById(Long id) throws LibBadRequest {
-        Optional<UserDTO> user = userRepo.findById(id).map(userDTOMapper);
 
-        if(user.isPresent()) {
-            return user;
+        Optional<Users> user = userRepo.findById(id);
+
+        UserDTO userDTO = userDTOMapper.toDTO(user.get());
+
+        if(userDTO !=null) {
+            return Optional.of(userDTO);
         } else {
             throw new LibBadRequest("User not found");
         }

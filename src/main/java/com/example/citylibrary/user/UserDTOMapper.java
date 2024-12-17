@@ -2,18 +2,40 @@ package com.example.citylibrary.user;
 
 import org.springframework.stereotype.Service;
 
-import java.util.function.Function;
+import java.util.Optional;
+
 
 @Service
-public class UserDTOMapper implements Function<Users, UserDTO> {
-    @Override
-    public UserDTO apply(Users users) {
-        return new UserDTO(
-                users.getUser_id(),
-                users.getFirst_name(),
-                users.getLast_name(),
-                users.getEmail(),
-                users.getMember_number()
-        );
+public class UserDTOMapper {
+
+    public UserDTO toDTO(Users user) {
+        if (user == null) {
+            return null;
+        }
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUser_id(user.getUser_id());
+        userDTO.setFirst_name(user.getFirst_name());
+        userDTO.setLast_name(user.getLast_name());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setMember_number(user.getMember_number());
+
+        return userDTO;
     }
+
+    public Users toUsers(UserDTO userDTO) {
+        if (userDTO == null) {
+            return null;
+        }
+
+        Users users = new Users();
+        users.setUser_id(userDTO.getUser_id());
+        users.setFirst_name(userDTO.getFirst_name());
+        users.setLast_name(userDTO.getLast_name());
+        users.setEmail(userDTO.getEmail());
+        users.setMember_number(userDTO.getMember_number());
+
+        return users;
+    }
+
 }

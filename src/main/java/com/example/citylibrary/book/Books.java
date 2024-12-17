@@ -33,7 +33,7 @@ public class Books {
 
     private boolean available;
 
-    @OneToMany(mappedBy = "book_Id", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
     private List<Loans> loans;
 

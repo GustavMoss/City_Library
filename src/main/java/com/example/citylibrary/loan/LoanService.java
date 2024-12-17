@@ -3,10 +3,7 @@ package com.example.citylibrary.loan;
 import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
-import com.example.citylibrary.user.UserDTO;
-import com.example.citylibrary.user.UserService;
-import com.example.citylibrary.user.Users;
-import com.example.citylibrary.user.UsersDTOMapper;
+import com.example.citylibrary.user.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +23,15 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookService bookService;
     private final UserService userService;
-    private final UsersDTOMapper usersDTOMapper;
+    private final UserDTOMapper userDTOMapper;
 
 
     @Autowired
-    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService, UsersDTOMapper usersDTOMapper) {
+    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService, UserDTOMapper userDTOMapper) {
         this.loanRepository = loanRepository;
         this.bookService = bookService;
         this.userService = userService;
-        this.usersDTOMapper = usersDTOMapper;
+        this.userDTOMapper = userDTOMapper;
     }
 
     public List<Loans> getAllLoans() {
@@ -51,7 +48,14 @@ public class LoanService {
 
     public Optional<Loans> getLoanById(Long id) {
 
-        return loanRepository.findById(id);
+        // TODO: this seems to work, so do something similar to getAllLoans and getAllActiveLoans above.
+        Optional<Loans> loan = loanRepository.findById(id);
+
+        UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+        loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
+        return loan;
     }
 
     public Loans createLoan(Long bookId , Long userId) throws LibBadRequest {
@@ -64,18 +68,17 @@ public class LoanService {
             if (!book.get().isAvailable()) {
                 throw new LibBadRequest("Book is not available");
             }
-            loan.setBook_Id(book.get());
+            loan.setBook(book.get());
             bookService.changeAvailability(book.get().getBook_id());
         } else {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<UserDTO> user = userService.getUserById(userId);
+        Optional<UserDTO> userDTO = userService.getUserById(userId);
+        Users user = userDTOMapper.toUsers(userDTO.get());
 
-        if (user.isPresent()) {
-           // loan.setUser_id(user.get());
-            // FIXME: getUserById now returns a DTO. The loan object expects a Users object. Map the DTO back to a user object? or just make loan expect a DTO in the first place?( tried this but didn't seem to take, but to be fair I tried for like 5 min)
-            System.out.println("Nobody here but us chickens");
+        if (user != null) {
+            loan.setUser(user);
         } else {
             throw new LibBadRequest("user not found");
         }
@@ -102,7 +105,7 @@ public class LoanService {
         Optional<Loans> loan = loanRepository.findById(id);
 
         if (loan.isPresent()) {
-            Optional<Books> book = bookService.getBookById(loan.get().getBook_Id().getBook_id());
+            Optional<Books> book = bookService.getBookById(loan.get().getBook().getBook_id());
             if (book.isPresent()) {
                 book.get().setAvailable(true);
             } else {

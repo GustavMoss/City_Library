@@ -27,11 +27,11 @@ public class Loans {
 
     @ManyToOne
     @JoinColumn(name = "book_id")
-    private Books book_Id;
+    private Books book;
     
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user_id;
+    private Users user;
 
     @NotNull(message = "loan date cannot be null")
     private LocalDate loan_date;

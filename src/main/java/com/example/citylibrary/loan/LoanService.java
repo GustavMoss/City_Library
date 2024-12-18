@@ -3,7 +3,10 @@ package com.example.citylibrary.loan;
 import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
-import com.example.citylibrary.user.*;
+import com.example.citylibrary.user.UserDTO;
+import com.example.citylibrary.user.UserDTOMapper;
+import com.example.citylibrary.user.UserService;
+import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,11 +37,23 @@ public class LoanService {
     }
 
     public List<Loans> getAllLoans() {
-        return loanRepository.findAll();
+        List<Loans> allLoans = loanRepository.findAll();
+
+        allLoans.forEach(loan -> {
+            UserDTO userDTO = userDTOMapper.toDTO(loan.getUser());
+            loan.setUser(userDTOMapper.toUsers(userDTO));
+        });
+
+        return allLoans;
     }
 
     public ResponseEntity<List<Loans>> getAllActiveLoans() {
         List<Loans> allLoans = loanRepository.findAll();
+
+        allLoans.forEach(loan -> {
+            UserDTO userDTO = userDTOMapper.toDTO(loan.getUser());
+            loan.setUser(userDTOMapper.toUsers(userDTO));
+        });
 
         return new ResponseEntity<>(allLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
@@ -95,6 +109,11 @@ public class LoanService {
         if (loan.isPresent()) {
             loan.get().setDue_date(newLoan.getDue_date());
             loan.get().setLoan_date(newLoan.getLoan_date());
+
+            UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+            loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
             return loanRepository.save(loan.get());
         } else {
             throw new LibBadRequest("could not find loan with id: " + id);
@@ -106,12 +125,19 @@ public class LoanService {
 
         if (loan.isPresent()) {
             Optional<Books> book = bookService.getBookById(loan.get().getBook().getBook_id());
+
             if (book.isPresent()) {
                 book.get().setAvailable(true);
             } else {
                 throw new LibBadRequest("book not found");
             }
+
             loan.get().setReturned_date(LocalDate.now());
+
+            UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+            loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
             return loanRepository.save(loan.get());
         } else {
             throw new LibBadRequest("could not find loan with id: " + id);

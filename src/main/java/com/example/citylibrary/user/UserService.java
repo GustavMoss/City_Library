@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 @Service
 public class UserService {
@@ -70,7 +71,11 @@ public class UserService {
             userToUpdate.get().setLast_name(user.getLast_name());
             userToUpdate.get().setMember_number(user.getMember_number());
 
-            return userRepo.save(userToUpdate.get());
+            userRepo.save(userToUpdate.get());
+
+            UserDTO userDTO = userDTOMapper.toDTO(userToUpdate.get());
+
+            return userDTOMapper.toUsers(userDTO);
         } else {
             throw new LibBadRequest("Could not find user");
         }

@@ -33,6 +33,7 @@ public class UserAdminController {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
+    // TODO: validation here might not be the best option, look into alternatives.
     // update existing user
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")

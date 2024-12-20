@@ -4,6 +4,7 @@ import com.example.citylibrary.book.BookService;
 import com.example.citylibrary.book.Books;
 import com.example.citylibrary.exceptions.LibBadRequest;
 import com.example.citylibrary.user.UserDTO;
+import com.example.citylibrary.user.UserDTOMapper;
 import com.example.citylibrary.user.UserService;
 import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,21 +25,35 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final BookService bookService;
     private final UserService userService;
+    private final UserDTOMapper userDTOMapper;
 
 
     @Autowired
-    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService) {
+    public LoanService(LoanRepository loanRepository, BookService bookService, UserService userService, UserDTOMapper userDTOMapper) {
         this.loanRepository = loanRepository;
         this.bookService = bookService;
         this.userService = userService;
+        this.userDTOMapper = userDTOMapper;
     }
 
     public List<Loans> getAllLoans() {
-        return loanRepository.findAll();
+        List<Loans> allLoans = loanRepository.findAll();
+
+        allLoans.forEach(loan -> {
+            UserDTO userDTO = userDTOMapper.toDTO(loan.getUser());
+            loan.setUser(userDTOMapper.toUsers(userDTO));
+        });
+
+        return allLoans;
     }
 
     public ResponseEntity<List<Loans>> getAllActiveLoans() {
         List<Loans> allLoans = loanRepository.findAll();
+
+        allLoans.forEach(loan -> {
+            UserDTO userDTO = userDTOMapper.toDTO(loan.getUser());
+            loan.setUser(userDTOMapper.toUsers(userDTO));
+        });
 
         return new ResponseEntity<>(allLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
@@ -48,7 +62,14 @@ public class LoanService {
 
     public Optional<Loans> getLoanById(Long id) {
 
-        return loanRepository.findById(id);
+        // TODO: this seems to work, so do something similar to getAllLoans and getAllActiveLoans above.
+        Optional<Loans> loan = loanRepository.findById(id);
+
+        UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+        loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
+        return loan;
     }
 
     public Loans createLoan(Long bookId , Long userId) throws LibBadRequest {
@@ -61,18 +82,17 @@ public class LoanService {
             if (!book.get().isAvailable()) {
                 throw new LibBadRequest("Book is not available");
             }
-            loan.setBook_Id(book.get());
+            loan.setBook(book.get());
             bookService.changeAvailability(book.get().getBook_id());
         } else {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<UserDTO> user = userService.getUserById(userId);
+        Optional<UserDTO> userDTO = userService.getUserById(userId);
+        Users user = userDTOMapper.toUsers(userDTO.get());
 
-        if (user.isPresent()) {
-           // loan.setUser_id(user.get());
-            // FIXME: getUserById now returns a DTO. The loan object expects a Users object. Map the DTO back to a user object? or just make loan expect a DTO in the first place?( tried this but didn't seem to take, but to be fair I tried for like 5 min)
-            System.out.println("Nobody here but us chickens");
+        if (user != null) {
+            loan.setUser(user);
         } else {
             throw new LibBadRequest("user not found");
         }
@@ -89,6 +109,11 @@ public class LoanService {
         if (loan.isPresent()) {
             loan.get().setDue_date(newLoan.getDue_date());
             loan.get().setLoan_date(newLoan.getLoan_date());
+
+            UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+            loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
             return loanRepository.save(loan.get());
         } else {
             throw new LibBadRequest("could not find loan with id: " + id);
@@ -99,13 +124,20 @@ public class LoanService {
         Optional<Loans> loan = loanRepository.findById(id);
 
         if (loan.isPresent()) {
-            Optional<Books> book = bookService.getBookById(loan.get().getBook_Id().getBook_id());
+            Optional<Books> book = bookService.getBookById(loan.get().getBook().getBook_id());
+
             if (book.isPresent()) {
                 book.get().setAvailable(true);
             } else {
                 throw new LibBadRequest("book not found");
             }
+
             loan.get().setReturned_date(LocalDate.now());
+
+            UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());
+
+            loan.get().setUser(userDTOMapper.toUsers(sanitizedUser));
+
             return loanRepository.save(loan.get());
         } else {
             throw new LibBadRequest("could not find loan with id: " + id);

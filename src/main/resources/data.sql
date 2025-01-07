@@ -2,171 +2,159 @@
 CREATE TABLE IF NOT EXISTS authors
 (
     author_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+               BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     first_name
-    VARCHAR
-(
-    100
-) NOT NULL,
-    last_name VARCHAR
-(
-    100
-) NOT NULL,
+               VARCHAR(100) NOT NULL,
+    last_name  VARCHAR(100) NOT NULL,
     birth_date DATE
-    );
+);
 CREATE TABLE IF NOT EXISTS books
 (
     book_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+                     BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     title
-    VARCHAR
-(
-    255
-) NOT NULL,
+                     VARCHAR(255) NOT NULL,
     publication_year INT,
-    author_id BIGINT,
-    available BOOLEAN DEFAULT TRUE,
+    author_id        BIGINT,
+    available        BOOLEAN DEFAULT TRUE,
     FOREIGN KEY
-(
-    author_id
-) REFERENCES authors
-(
-    author_id
-)
-    );
+        (
+         author_id
+            ) REFERENCES authors
+        (
+         author_id
+            )
+);
 CREATE TABLE IF NOT EXISTS genres
 (
     genre_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+        BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     name
-    VARCHAR
-(
-    50
-) NOT NULL UNIQUE
-    );
+        VARCHAR(50) NOT NULL UNIQUE
+);
 CREATE TABLE IF NOT EXISTS books_genres
 (
     book_id
-    BIGINT,
+        BIGINT,
     genre_id
-    BIGINT,
+        BIGINT,
     PRIMARY
-    KEY
-(
-    book_id,
-    genre_id
-),
+        KEY
+        (
+         book_id,
+         genre_id
+            ),
     FOREIGN KEY
-(
-    book_id
-) REFERENCES books
-(
-    book_id
-),
+        (
+         book_id
+            ) REFERENCES books
+        (
+         book_id
+            ),
     FOREIGN KEY
-(
-    genre_id
-) REFERENCES genres
-(
-    genre_id
-)
-    );
+        (
+         genre_id
+            ) REFERENCES genres
+        (
+         genre_id
+            )
+);
 CREATE TABLE IF NOT EXISTS users
 (
     user_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+                  BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     first_name
-    VARCHAR
+                  VARCHAR(100) NOT NULL,
+    last_name     VARCHAR(100) NOT NULL,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    password      VARCHAR(255) NOT NULL,
+    member_number VARCHAR(10)  NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS role
 (
-    100
-) NOT NULL,
-    last_name VARCHAR
-(
-    100
-) NOT NULL,
-    email VARCHAR
-(
-    255
-) NOT NULL UNIQUE,
-    password VARCHAR
-(
-    255
-) NOT NULL,
-    member_number VARCHAR
-(
-    10
-) NOT NULL UNIQUE
-    );
+    id
+         BIGINT
+        PRIMARY KEY
+        AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
 CREATE TABLE IF NOT EXISTS loans
 (
     loan_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+        BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     book_id
-    BIGINT,
+        BIGINT,
     user_id
-    BIGINT,
+        BIGINT,
     loan_date
-    DATE
-    NOT
-    NULL,
+        DATE
+        NOT
+            NULL,
     due_date
-    DATE
-    NOT
-    NULL,
+        DATE
+        NOT
+            NULL,
     returned_date
-    DATE,
+        DATE,
     FOREIGN
-    KEY
-(
-    book_id
-) REFERENCES books
-(
-    book_id
-),
+        KEY
+        (
+         book_id
+            ) REFERENCES books
+        (
+         book_id
+            ),
     FOREIGN KEY
-(
-    user_id
-) REFERENCES users
-(
-    user_id
-)
-    );
+        (
+         user_id
+            ) REFERENCES users
+        (
+         user_id
+            )
+);
 CREATE TABLE IF NOT EXISTS admins
 (
     admin_id
-    BIGINT
-    PRIMARY
-    KEY
-    AUTO_INCREMENT,
+             BIGINT
+        PRIMARY
+            KEY
+        AUTO_INCREMENT,
     username
-    VARCHAR
+             VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(50) NOT NULL
+   -- roles BIGINT,
+    --FOREIGN KEY (roles) REFERENCES role(role_id)
+);
+-- Add in Roles colum into users and admin, this works for some reason, while doing it directly into the creation statement doesn't?
+ALTER TABLE  users ADD roles BIGINT;
+ALTER TABLE users ADD FOREIGN KEY (roles) REFERENCES role(id);
+ALTER TABLE admins ADD roles BIGINT;
+--ALTER TABLE admins ADD FOREIGN KEY (roles) REFERENCES role(id);
+CREATE TABLE IF NOT EXISTS user_roles
 (
-    50
-) NOT NULL UNIQUE,
-    password VARCHAR
-(
-    50
-) NOT NULL,
-    role VARCHAR
-(
-    20
-) NOT NULL
-    );
+    user_id BIGINT,
+    role_id BIGINT,
+    PRIMARY KEY ( user_id, role_id),
+    FOREIGN KEY (user_id) references users (user_id),
+    FOREIGN KEY (role_id) references role (id)
+
+);
 -- Clear existing data
 DELETE
 FROM books_genres;
@@ -182,6 +170,8 @@ DELETE
 FROM users;
 DELETE
 FROM admins;
+
+
 -- Reset auto-increment counters
 ALTER TABLE loans
     ALTER COLUMN loan_id RESTART WITH 11;
@@ -192,7 +182,7 @@ ALTER TABLE authors
 ALTER TABLE users
     ALTER COLUMN user_id RESTART WITH 11;
 ALTER TABLE admins
-    ALTER COLUMN admin_id RESTART WITH 11;
+    ALTER COLUMN admin_id RESTART WITH 100;
 ALTER TABLE genres
     ALTER COLUMN genre_id RESTART WITH 11;
 -- Populate authors
@@ -237,15 +227,23 @@ VALUES (1, 5), -- Pippi: Children
        (9, 3), -- Flickan som lekte med elden: Crime
        (10, 4);
 -- Mrs. Dalloway: Classic
+-- Populate roles
+INSERT INTO role(id, name) VALUES ( 1, 'admin' ), (2, 'Librarian'), (3, 'User');
+
 -- Populate users
 INSERT INTO users (user_id, first_name, last_name, email, password,
-                   member_number)
-VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230001'),
-       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230002'),
-       (3, 'Maria', 'Svensson', 'maria.svensson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230003'),
-       (4, 'Johan', 'Johansson', 'johan.johansson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.',
-        'M20230004'),
-       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230005');
+                   member_number, roles)
+VALUES (1, 'Anna', 'Andersson', 'anna.andersson@email.com',
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230001', 3),
+       (2, 'Erik', 'Eriksson', 'erik.eriksson@email.com',
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230002', 3),
+       (3, 'Maria', 'Svensson', 'maria.svensson@email.com',
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230003', 3),
+       (4, 'Johan', 'Johansson', 'johan.johansson@email.com',
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.',
+        'M20230004', 3),
+       (5, 'Eva', 'Larsson', 'eva.larsson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.',
+        'M20230005', 3);
 -- Populate loans
 INSERT INTO loans (loan_id, book_id, user_id, loan_date, due_date,
                    returned_date)
@@ -256,7 +254,9 @@ VALUES (1, 2, 1, '2024-01-15', '2024-02-15', NULL),
        (5, 3, 5, '2023-12-20', '2024-01-20', '2024-01-18'),
        (6, 6, 1, '2023-12-25', '2024-01-25', '2024-01-23');
 -- Populate admins
-INSERT INTO admins (admin_id, username, password, role)
-VALUES (1, 'admin', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 'ADMIN'),
-       (2, 'lisa', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 'LIBRARIAN'),
-       (3, 'lars', 'lars123', 'LIBRARIAN');
+INSERT INTO admins (admin_id, username, password, roles)
+VALUES (11, 'admin', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 1),
+       (12, 'lisa', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 2),
+       (13, 'lars', 'lars123', 2);
+--Populate user_roles
+INSERT INTO user_roles(user_id, role_id) VALUES ( 1, 3 ), (2, 3), (3, 3), (4, 3), (5, 3);

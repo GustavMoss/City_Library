@@ -42,7 +42,7 @@ public class SecurityConfig{
 
     @Bean
     @Order(1)
-    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http, RateLimitingFilter rateLimitingFilter) throws Exception {
+    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http /*, RateLimitingFilter rateLimitingFilter*/) throws Exception {
         http.
                 securityMatcher("/users/**")
                 .authorizeHttpRequests(auth ->
@@ -54,8 +54,8 @@ public class SecurityConfig{
                 .csrf(AbstractHttpConfigurer::disable) //
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(rateLimitingFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                //.addFilterBefore(rateLimitingFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

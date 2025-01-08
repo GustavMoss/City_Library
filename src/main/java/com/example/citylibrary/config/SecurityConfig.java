@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -46,8 +47,8 @@ public class SecurityConfig{
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .csrf(AbstractHttpConfigurer::disable) //
-                .userDetailsService(userDetailsService)
+                .csrf(AbstractHttpConfigurer::disable)
+               // .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
                 //.addFilterBefore(rateLimitingFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
@@ -61,6 +62,12 @@ public class SecurityConfig{
         authenticationManagerBuilder.userDetailsService(userDetailsService);
         return authenticationManagerBuilder.build();
     }
+
+   /* @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+
+    }*/
 
     // TODO: need this for login, take a look at trying to figure this out with our custom one? Seems like the custom encoder breaks login, I guess it's not validating properly since it was built on the old login?
     @Bean

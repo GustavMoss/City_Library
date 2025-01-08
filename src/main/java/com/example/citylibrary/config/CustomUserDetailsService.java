@@ -1,6 +1,5 @@
 package com.example.citylibrary.config;
 
-import com.example.citylibrary.user.UserPrincipal;
 import com.example.citylibrary.user.UserRepository;
 import com.example.citylibrary.user.Users;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +19,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepo.findByEmail(username);
 
-                if (user == null) {
-            System.out.println("User not found or you do not have permission to view this");
+        if (user == null) {
             throw new UsernameNotFoundException("User not found or you do not have permission to view this");
         }
-        user.getRoles().forEach(role -> {
-            System.out.println(role);
-        });
+
         return new org.springframework.security.core.userdetails.User(user.getEmail(),
                 user.getPassword(),
                 user.getRoles().stream().map(role ->
                         new SimpleGrantedAuthority(role.getName())).toList());
 
-
-//        if (user == null) {
-//            System.out.println("User not found or you do not have permission to view this");
-//            throw new UsernameNotFoundException("User not found or you do not have permission to view this");
-//        }
-//        return new UserPrincipal(user);
     }
 }

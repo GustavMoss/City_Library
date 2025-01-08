@@ -113,8 +113,9 @@ public class UserService {
         if(auth.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(auth);
             return jwtService.generateToken(user.getEmail());
+        } else {
+            return "failed to verify user";
         }
 
-        return "failed to verify user";
     }
 }

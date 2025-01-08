@@ -142,8 +142,6 @@ CREATE TABLE IF NOT EXISTS admins
     --FOREIGN KEY (roles) REFERENCES role(role_id)
 );
 -- Add in Roles colum into users and admin, this works for some reason, while doing it directly into the creation statement doesn't?
-ALTER TABLE users ADD roles BIGINT;
-ALTER TABLE users ADD FOREIGN KEY (roles) REFERENCES role(id);
 ALTER TABLE admins ADD roles BIGINT;
 --ALTER TABLE admins ADD FOREIGN KEY (roles) REFERENCES role(id);
 CREATE TABLE IF NOT EXISTS user_roles
@@ -232,21 +230,21 @@ INSERT INTO role(id, name) VALUES ( 1, 'ROLE_ADMIN' ), (2, 'ROLE_LIBRARIAN'), (3
 
 -- Populate users
 INSERT INTO users (user_id, first_name, last_name, email, password,
-                   member_number, roles)
-VALUES (1, 'Admin', 'Adminsson', 'admin@email.com', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 'Admin123', 1),
-       (2, 'lisa', 'lisasson', 'lisa@email.com', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 'lisa23', 2),
-       (3, 'lars', 'larsson', 'lars@email.com', '$2y$12$elwpgyJkiBQSauuTWJ4zWej3phVMs6f/JFQ7TSGCW9XYIww4a0Wgi', 'lars123', 2),
+                   member_number)
+VALUES (1, 'Admin', 'Adminsson', 'admin@email.com', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 'Admin123'),
+       (2, 'lisa', 'lisasson', 'lisa@email.com', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 'lisa23'),
+       (3, 'lars', 'larsson', 'lars@email.com', '$2y$12$elwpgyJkiBQSauuTWJ4zWej3phVMs6f/JFQ7TSGCW9XYIww4a0Wgi', 'lars123'),
        (4, 'Anna', 'Andersson', 'anna.andersson@email.com',
-        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230001', 3),
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230001'),
        (5, 'Erik', 'Eriksson', 'erik.eriksson@email.com',
-        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230002', 3),
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230002'),
        (6, 'Maria', 'Svensson', 'maria.svensson@email.com',
-        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230003', 3),
+        '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.', 'M20230003'),
        (7, 'Johan', 'Johansson', 'johan.johansson@email.com',
         '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.',
-        'M20230004', 3),
+        'M20230004'),
        (8, 'Eva', 'Larsson', 'eva.larsson@email.com', '$2y$12$AoFj0cR8JOjIRMErIvO9necGcO2RZNZSvVoY.snKufdzQ/U2Kcxd.',
-        'M20230005', 3);
+        'M20230005');
 
 -- Populate loans
 INSERT INTO loans (loan_id, book_id, user_id, loan_date, due_date,
@@ -263,4 +261,4 @@ VALUES (11, 'admin', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2
        (12, 'lisa', '$2y$12$m8hPT.lhyRi6YKTisz33YuXCscmnFGOXOZ1CkaO9FNt8lkdaeSJiq', 2),
        (13, 'lars', 'lars123', 2);
 --Populate user_roles
-INSERT INTO user_roles(user_id, role_id) VALUES (1, 1), (2, 2), (3, 2), ( 4, 3 ), (5, 3), (6, 3), (7, 3), (8, 3);
+INSERT INTO user_roles(user_id, role_id) VALUES (1, 1), (1, 2), (1, 3), (2, 2), (2, 3),  (3, 2), (3, 3), ( 4, 3 ), (5, 3), (6, 3), (7, 3), (8, 3);

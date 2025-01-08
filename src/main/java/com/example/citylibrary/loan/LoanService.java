@@ -38,7 +38,7 @@ public class LoanService {
         return loanRepository.findById(id);
     }
 
-    public Loans createLoan(Long bookId , Long userId) throws LibBadRequest {
+    public Loans createLoan(Long bookId , String MemberNumber) throws LibBadRequest {
 
         Loans loan = new Loans();
 
@@ -55,7 +55,7 @@ public class LoanService {
             throw new LibBadRequest("book not found");
         }
 
-        Optional<Users> user = userService.getUserById(userId);
+        Optional<Users> user = userService.getUserByMemberNumber(MemberNumber);
 
         if (user.isPresent()) {
             loan.setUser_id(user.get());

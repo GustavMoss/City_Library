@@ -41,8 +41,8 @@ public class LoanController {
     }
 
     @PostMapping
-    public ResponseEntity<Loans> createLoan(@RequestParam Long bookId, @RequestParam Long userId ) {
-        Loans loan = loanService.createLoan(bookId, userId);
+    public ResponseEntity<Loans> createLoan(@RequestParam Long bookId, @RequestParam String memberNumber ) {
+        Loans loan = loanService.createLoan(bookId, memberNumber);
         return new ResponseEntity<>(loan, HttpStatus.CREATED);
     }
 

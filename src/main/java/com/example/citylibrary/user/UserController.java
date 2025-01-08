@@ -48,14 +48,14 @@ public class UserController {
 
     // return all of a users loans both inactive and active
     @GetMapping("/{member_number}/{username}/loans")
-    public ResponseEntity<List<Loans>> getAllUserLoans(@RequestParam Long member_number) {
+    public ResponseEntity<List<Loans>> getAllUserLoans(@RequestParam String member_number) {
         List<Loans> userLoans = userService.getLoansByMemberNumber(member_number);
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
     }
 
     // returns active loans by user id
     @GetMapping("/{member_number}/{username}/loans/active")
-    public ResponseEntity<List<Loans>> getActiveUserLoans(@RequestParam Long member_number) {
+    public ResponseEntity<List<Loans>> getActiveUserLoans(@RequestParam String member_number) {
         List<Loans> userLoans = userService.getLoansByMemberNumber(member_number);
         /*List<Loans> activeUserLoans = userLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
@@ -67,7 +67,7 @@ public class UserController {
 
     // loan a book by calling the loanservice and using its methods
     @PostMapping("/{member_number}/{username}/new-loan")
-    public ResponseEntity<Loans> createNewLoan(@PathVariable Long member_number,  @RequestParam Long bookId) {
+    public ResponseEntity<Loans> createNewLoan(@PathVariable String member_number,  @RequestParam Long bookId) {
         Loans newLoan = loanService.createLoan(bookId,member_number);
         return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
     }

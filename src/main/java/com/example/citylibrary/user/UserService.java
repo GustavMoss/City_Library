@@ -46,6 +46,18 @@ public class UserService {
         return userRepo.findById(id).get().getLoans();
     }
 
+    // get user by username
+    public Optional<UserDTO> getUserByUsername(String username) {
+        Users user = userRepo.findByEmail(username);
+
+        if (user == null) {
+            System.out.println("Could not find user with username: " + username);
+            return Optional.empty();
+        }
+
+        return Optional.of(userDTOMapper.toDTO(user));
+    }
+
     // get a specific user by ID
     public Optional<UserDTO> getUserById(Long id) throws LibBadRequest {
 

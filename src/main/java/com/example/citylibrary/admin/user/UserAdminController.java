@@ -28,7 +28,7 @@ public class UserAdminController {
 
     // create/register new user
     @PostMapping("/register")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
@@ -36,14 +36,14 @@ public class UserAdminController {
     // TODO: validation here might not be the best option, look into alternatives.
     // update existing user
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
         Users updatedUser = userService.updateUserById(userId, user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/active-loans")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans.stream()

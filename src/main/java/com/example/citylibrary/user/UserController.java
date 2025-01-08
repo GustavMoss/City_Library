@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +30,19 @@ public class UserController {
 
     // Get user by id
     // FIXME: should user have access to this? I'd assume we'd need something like this to say print out a users info on their userpage or something, maybe as long as we strictly control the data being sent it's fine?
-    @GetMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @GetMapping("/get-user")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<Optional<UserDTO>> getUserById(@PathVariable Long userId){
         Optional<UserDTO> user = userService.getUserById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/get-username")
+    @PreAuthorize("hasAnyRole('USER')")
+    public UserDTO getUsername(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserDTO> userDTO = userService.getUserByUsername(userDetails.getUsername());
+        return userDTO.orElse(null);
     }
 
     // FIXME: moved to admin, but might want to keep it here as well? Users should be able to create an account by themselves?
@@ -59,7 +69,7 @@ public class UserController {
 
     // return all of a users loans both inactive and active
     @GetMapping("/{userId}/loans")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<List<Loans>> getAllUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
@@ -68,7 +78,7 @@ public class UserController {
     // FIXME: moved to admin as well, does a user need this? Probably right? to check their own active loans
     // returns active loans by user id
     @GetMapping("/{userId}/loans/active")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans.stream()
@@ -78,7 +88,7 @@ public class UserController {
 
     // loan a book by calling the loanservice and using its methods
     @PostMapping("/{userId}/new-loan")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<Loans> createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
         Loans newLoan = loanService.createLoan(bookId, userId);
         return new ResponseEntity<>(newLoan, HttpStatus.CREATED);

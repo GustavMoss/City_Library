@@ -1,11 +1,12 @@
 package com.example.citylibrary.book;
 
-import com.example.citylibrary.exceptions.LibBookIsOnLoan;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,32 +34,4 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    // FIXME: below endpoints moved to admin, delete here when safe
-    /*@PostMapping
-    public ResponseEntity<Books> addBook(@RequestBody @Valid Books books) {
-        Books book = bookService.addBook(books);
-        return new ResponseEntity<>(book, HttpStatus.CREATED);
-    }*/
-
-    /*@PutMapping("/{id}")
-    public ResponseEntity<Books> updateBook(@PathVariable @Valid Long id, @RequestBody Books books) {
-        Books updatedBook = bookService.updateBook(books, id);
-        return new ResponseEntity<>(updatedBook, HttpStatus.OK);
-    }*/
-
-   /* @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        try {
-            boolean isDeleted = bookService.deleteBook(id);
-            if (isDeleted) {
-                return ResponseEntity.ok("Book with id " + id + " was successfully deleted.");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book with id " + id + " not found.");
-            }
-        } catch (LibBookIsOnLoan ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
-        }
-    }*/
 }

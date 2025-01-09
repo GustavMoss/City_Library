@@ -249,12 +249,12 @@ VALUES (1, 'Admin', 'Adminsson', 'admin@email.com', '$2y$12$41WhoLUC//2yv.eN.AVP
 -- Populate loans
 INSERT INTO loans (loan_id, book_id, user_id, loan_date, due_date,
                    returned_date)
-VALUES (1, 2, 1, '2024-01-15', '2024-02-15', NULL),
-       (2, 5, 2, '2024-01-20', '2024-02-20', NULL),
-       (3, 9, 3, '2024-01-25', '2024-02-25', NULL),
-       (4, 1, 4, '2023-12-15', '2024-01-15', '2024-01-14'),
-       (5, 3, 5, '2023-12-20', '2024-01-20', '2024-01-18'),
-       (6, 6, 1, '2023-12-25', '2024-01-25', '2024-01-23');
+VALUES (1, 2, 4, '2024-01-15', '2024-02-15', NULL),
+       (2, 5, 5, '2024-01-20', '2024-02-20', NULL),
+       (3, 9, 6, '2024-01-25', '2024-02-25', NULL),
+       (4, 1, 7, '2023-12-15', '2024-01-15', '2024-01-14'),
+       (5, 3, 8, '2023-12-20', '2024-01-20', '2024-01-18'),
+       (6, 6, 4, '2023-12-25', '2024-01-25', '2024-01-23');
 -- Populate admins
 INSERT INTO admins (admin_id, username, password, roles)
 VALUES (11, 'admin', '$2y$12$41WhoLUC//2yv.eN.AVPo.3cGKLmiFJ87O4Ltq6roa6X/Gwzuy2VC', 1),

@@ -29,37 +29,29 @@ public class UserController {
     }
 
     // Get user by id
-    // FIXME: should user have access to this? I'd assume we'd need something like this to say print out a users info on their userpage or something, maybe as long as we strictly control the data being sent it's fine?
     @GetMapping("/get-user")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<Optional<UserDTO>> getUserById(@PathVariable Long userId){
-        Optional<UserDTO> user = userService.getUserById(userId);
+    public ResponseEntity<Optional<UserDTO>> getUser(Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserDTO> user = userService.getUserByEmail(userDetails.getUsername());
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @GetMapping("/get-username")
-    @PreAuthorize("hasAnyRole('USER')")
-    public UserDTO getUsername(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Optional<UserDTO> userDTO = userService.getUserByUsername(userDetails.getUsername());
-        return userDTO.orElse(null);
-    }
-
-    // FIXME: moved to admin, but might want to keep it here as well? Users should be able to create an account by themselves?
+    // FIXME: moved to admin, but users should be able so sign up by themselves so keep this here as well or should they just both call this endpoint?
     // create/register new user
     @PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
-    // FIXME: move this from here to a more general end-point?`(/login instead of /users/login) To be fair the end result would most likely be the same, the URL would be the only difference?
+    // TODO: move this to it's own auth controller?
     // login end-point
     @PostMapping("/login")
     public String login(@RequestBody Users user) {
         return userService.verify(user);
     }
 
-    // FIXME: moved to admin, delete this when safe
+    // FIXME: moved to admin, delete this when safe. Although users should be able to update their own info so might want to keep this here.
     // update user info
    /* @PutMapping("/{userId}")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
@@ -68,29 +60,37 @@ public class UserController {
     }*/
 
     // return all of a users loans both inactive and active
-    @GetMapping("/{userId}/loans")
+    @GetMapping("/loans")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<List<Loans>> getAllUserLoansById(@PathVariable Long userId) {
-        List<Loans> userLoans = userService.getLoansByUserId(userId);
+    public ResponseEntity<List<Loans>> getAllUserLoans(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserDTO> user = userService.getUserByEmail(userDetails.getUsername());
+        List<Loans> userLoans = userService.getLoansByUserId(user.get().user_id);
+
         return new ResponseEntity<>(userLoans, HttpStatus.OK);
     }
 
-    // FIXME: moved to admin as well, does a user need this? Probably right? to check their own active loans
     // returns active loans by user id
-    @GetMapping("/{userId}/loans/active")
+    @GetMapping("/loans/active")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
-        List<Loans> userLoans = userService.getLoansByUserId(userId);
+    public ResponseEntity<List<Loans>> getActiveUserLoans(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserDTO> user = userService.getUserByEmail(userDetails.getUsername());
+        List<Loans> userLoans = userService.getLoansByUserId(user.get().getUser_id());
+
         return new ResponseEntity<>(userLoans.stream()
                 .filter(loan -> loan.getReturned_date() == null)
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     // loan a book by calling the loanservice and using its methods
-    @PostMapping("/{userId}/new-loan")
+    @PostMapping("/new-loan")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<Loans> createNewLoan(@PathVariable Long userId, @RequestParam Long bookId) {
-        Loans newLoan = loanService.createLoan(bookId, userId);
+    public ResponseEntity<Loans> createNewLoan(Authentication authentication, @RequestParam Long bookId) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Optional<UserDTO> user = userService.getUserByEmail(userDetails.getUsername());
+        Loans newLoan = loanService.createLoan(bookId, user.get().getUser_id());
+
         return new ResponseEntity<>(newLoan, HttpStatus.CREATED);
     }
 }

@@ -28,22 +28,22 @@ public class UserAdminController {
 
     // create/register new user
     @PostMapping("/register")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
-    // TODO: validation here might not be the best option, look into alternatives.
+    // TODO: not sure how to solve these. Need to get the user from somewhere. Maybe use the email? or Member-number? A librarian or admin would search by a username or membernumber that a user gives them and then they use that to access the object and change the data.
     // update existing user
     @PutMapping("/{userId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {
         Users updatedUser = userService.updateUserById(userId, user);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/active-loans")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {
         List<Loans> userLoans = userService.getLoansByUserId(userId);
         return new ResponseEntity<>(userLoans.stream()

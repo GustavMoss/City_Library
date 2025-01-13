@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+//@Component
 public class RateLimitingFilter extends OncePerRequestFilter {
 
     //Håller reda på antal requests & tidstämpel för varje IP-adress
@@ -52,7 +52,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         //Returnera status 429 om antal requests överskrider maxgränsen
         if (requestInfo.count >= MAX_REQUESTS_PER_MINUTE) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.getWriter().write("Too many requests - please try again in a minute.");
+            response.getWriter().write("Too many requests - please try again in a minute. Vooty");
             return;
         }
 

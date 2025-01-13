@@ -3,9 +3,9 @@ package com.example.citylibrary.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,16 +23,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig{
 
     private final CustomUserDetailsService userDetailsService;
-    private final AdminUserDetailsService adminUserDetailsService;
     private final JwtFilter jwtFilter;
-    private final JWTAdminFilter jwtAdminFilter;
 
     @Autowired
-    public SecurityConfig(CustomUserDetailsService userDetailsService, AdminUserDetailsService adminUserDetailsService, JwtFilter jwtFilter, JWTAdminFilter jwtAdminFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtFilter jwtFilter) {
         this.userDetailsService = userDetailsService;
-        this.adminUserDetailsService = adminUserDetailsService;
         this.jwtFilter = jwtFilter;
-        this.jwtAdminFilter = jwtAdminFilter;
     }
 
     /*@Bean
@@ -41,58 +37,37 @@ public class SecurityConfig{
     }*/
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http, RateLimitingFilter rateLimitingFilter) throws Exception {
+   // @Order(1)
+    public SecurityFilterChain userSecurityFilterChain(HttpSecurity http /*, RateLimitingFilter rateLimitingFilter*/) throws Exception {
         http.
-                securityMatcher("/users/**")
-                .authorizeHttpRequests(auth ->
+                authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/users/register", "/users/login").permitAll()
-                                .requestMatchers("/h2-console/**").permitAll()
-                                .anyRequest().authenticated())
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .csrf(AbstractHttpConfigurer::disable) //
-                .userDetailsService(userDetailsService)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(rateLimitingFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-
-
-    @Bean
-    @Order(2)
-    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.
-                securityMatcher("/admin/**")
-                .authorizeHttpRequests(auth ->
-                        auth
-                                .requestMatchers("/admin/login").permitAll()
+                                .requestMatchers("/users/register").permitAll()
+                                .requestMatchers("/users/login").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .csrf(AbstractHttpConfigurer::disable)
-                .userDetailsService(adminUserDetailsService)
+               // .userDetailsService(userDetailsService)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAdminFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                //.addFilterBefore(rateLimitingFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // after some more research it seems the issue is that since I have 2 userdetailsservices the authmanager doesnt know which one to use so it tries creating a basic one (lazy init?) and that doesn't work so it tries again and then just gets stuck in a loop
-    // so I have to create a custom authmanager/tell it too use 2 authproviders/userdetailsservices.
-    // So that is what this authmangagerbuilder is doing, it just tells the AUthenticationManager to use both userdetails, it will go through them by itself.
-    // https://stackoverflow.com/a/74706573
-    // https://www.baeldung.com/spring-security-multiple-auth-providers
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService);
-        authenticationManagerBuilder.userDetailsService(adminUserDetailsService);
         return authenticationManagerBuilder.build();
     }
+
+   /* @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+
+    }*/
 
     // TODO: need this for login, take a look at trying to figure this out with our custom one? Seems like the custom encoder breaks login, I guess it's not validating properly since it was built on the old login?
     @Bean

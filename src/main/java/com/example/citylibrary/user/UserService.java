@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 public class UserService {
@@ -43,7 +42,26 @@ public class UserService {
 
     // get a users loans
     public List<Loans> getLoansByUserId(Long id) {
-        return userRepo.findById(id).get().getLoans();
+        List<Loans> userLoans = userRepo.findById(id).get().getLoans();
+
+        userLoans.forEach(loan -> {
+            UserDTO userDTO = userDTOMapper.toDTO(loan.getUser());
+            loan.setUser(userDTOMapper.toUsers(userDTO));
+        });
+
+        return userLoans;
+    }
+
+    // get user by username
+    public Optional<UserDTO> getUserByEmail(String username) {
+        Users user = userRepo.findByEmail(username);
+
+        if (user == null) {
+            System.out.println("Could not find user with username: " + username);
+            return Optional.empty();
+        }
+
+        return Optional.of(userDTOMapper.toDTO(user));
     }
 
     // get a specific user by ID
@@ -101,8 +119,9 @@ public class UserService {
         if(auth.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(auth);
             return jwtService.generateToken(user.getEmail());
+        } else {
+            return "failed to verify user";
         }
 
-        return "failed to verify user";
     }
 }

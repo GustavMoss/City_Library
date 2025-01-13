@@ -22,8 +22,6 @@ public class AdminService {
         this.authManager = authManager;
     }
 
-    // TODO: add functionality to create new admins/librarians?
-
 
     public String verify(Admins admin) {
         Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(admin.getUsername(), admin.getPassword()));

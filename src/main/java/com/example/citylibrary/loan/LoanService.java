@@ -62,7 +62,6 @@ public class LoanService {
 
     public Optional<Loans> getLoanById(Long id) {
 
-        // TODO: this seems to work, so do something similar to getAllLoans and getAllActiveLoans above.
         Optional<Loans> loan = loanRepository.findById(id);
 
         UserDTO sanitizedUser = userDTOMapper.toDTO(loan.get().getUser());

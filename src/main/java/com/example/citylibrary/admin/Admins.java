@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
-
+// TODO: DELETE? also delete the stuff from data.sql in that case
 @Entity
 @Getter
 @Setter

@@ -60,7 +60,7 @@ public class JWTService {
     }
 
     public String extractUsername(String token) {
-        // extract useremail from token (username) for users this will be an email. For admins it will be an actual username
+        // extract useremail from token (username) in this case we use email as the username
         return extractClaim(token, Claims::getSubject);
     }
 

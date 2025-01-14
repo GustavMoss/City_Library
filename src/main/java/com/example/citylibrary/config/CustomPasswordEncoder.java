@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
+@Configuration
 public class CustomPasswordEncoder implements PasswordEncoder {
 
     // Lösenordskryptering

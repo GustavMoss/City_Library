@@ -52,7 +52,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         //Returnera status 429 om antal requests överskrider maxgränsen
         if (requestInfo.count >= MAX_REQUESTS_PER_MINUTE) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            response.getWriter().write("Too many requests - please try again in a minute. Vooty");
+            response.getWriter().write("Too many requests - please try again in a minute.");
             return;
         }
 

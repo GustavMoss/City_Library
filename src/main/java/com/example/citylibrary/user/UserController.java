@@ -37,7 +37,6 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    // FIXME: moved to admin, but users should be able so sign up by themselves so keep this here as well or should they just both call this endpoint?
     // create/register new user
     @PostMapping("/register")
     public ResponseEntity<Users> postNewUser(@RequestBody @Valid Users user) {
@@ -51,7 +50,7 @@ public class UserController {
         return userService.verify(user);
     }
 
-    // FIXME: moved to admin, delete this when safe. Although users should be able to update their own info so might want to keep this here.
+    // FIXME: moved to admin, delete this when safe. Although users should be able to update their own info(?) so might want to keep this here.
     // update user info
    /* @PutMapping("/{userId}")
     public ResponseEntity<Users> updateUser(@PathVariable Long userId, @RequestBody @Valid Users user) {

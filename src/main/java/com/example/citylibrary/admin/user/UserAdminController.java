@@ -33,7 +33,7 @@ public class UserAdminController {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
-    // TODO: not sure how to solve these. Need to get the user from somewhere. Maybe use the email? or Member-number? A librarian or admin would search by a username or membernumber that a user gives them and then they use that to access the object and change the data.
+    // TODO: Let's say these take a username/email/member-number or something as input. In this case that would probably work since the librarian probably has some form of frontend to put in this data
     // update existing user
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")

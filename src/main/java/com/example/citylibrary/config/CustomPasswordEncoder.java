@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Getter
+@Configuration
 public class CustomPasswordEncoder implements PasswordEncoder {
 
     // Lösenordskryptering
@@ -28,6 +29,7 @@ public class CustomPasswordEncoder implements PasswordEncoder {
 
     // Metod för att validera lösenord via parametern
     private void validatePassword(String password) {
+
         // Tar in lösenordsvalideringsklassen (se nedanför)
         PasswordValidator passwordValidator = new PasswordValidator(password);
 

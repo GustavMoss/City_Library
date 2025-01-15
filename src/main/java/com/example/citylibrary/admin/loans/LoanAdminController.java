@@ -41,6 +41,7 @@ public class LoanAdminController {
         return new ResponseEntity<>(loan, HttpStatus.CREATED);
     }
 
+    // TODO: ta bort id i URL
     @PutMapping("/{loanId}/return-loan")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Loans> addReturnedDate(@PathVariable Long loanId) {
@@ -48,6 +49,7 @@ public class LoanAdminController {
         return new ResponseEntity<>(loanDate, HttpStatus.OK);
     }
 
+    // TODO: ta bort id i URL
     @DeleteMapping("/{loanId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<String> deleteLoan(@PathVariable Long loanId) {

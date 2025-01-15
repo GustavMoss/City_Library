@@ -2,6 +2,8 @@ package com.example.citylibrary.admin;
 
 import org.springframework.stereotype.Service;
 
+// TODO: Ta bort allting admin-relaterat
+
 @Service
 public class AdminDTOMapper {
 

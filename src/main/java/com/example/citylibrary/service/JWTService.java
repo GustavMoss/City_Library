@@ -60,7 +60,7 @@ public class JWTService {
     }
 
     public String extractUsername(String token) {
-        // extract useremail from token (username) for users this will be an email. For admins it will be an actual username
+        // extract useremail from token (username) for users this will be an email.
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -69,6 +69,7 @@ public class JWTService {
         return claimsResolver.apply(claims);
     }
 
+    // TODO: JWT.parser är utgången, finns bättre (Jwt.builder???)
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getKey())

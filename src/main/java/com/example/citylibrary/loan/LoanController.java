@@ -30,6 +30,7 @@ public class LoanController {
     }
 
     // TODO: take a look at these endpoints, should we expose these Ids in the URL?
+    //  => NEJ, det ska den inte göra!
     @GetMapping("/get-all-loans")
     @PreAuthorize("hasAnyAuthority('USER')")
     public ResponseEntity<List<Loans>> getAllLoans() {

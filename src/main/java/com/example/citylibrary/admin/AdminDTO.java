@@ -2,6 +2,9 @@ package com.example.citylibrary.admin;
 
 import lombok.Data;
 
+
+// TODO: Ta bort allting admin-relaterat
+
 // currently no end-point returns an unsanitized admin object, thus this is not used. Same goes for the mapper
 @Data
 public class AdminDTO {

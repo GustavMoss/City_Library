@@ -22,7 +22,7 @@ public class BooksAdminController {
     public BooksAdminController(BookService bookService) {
         this.bookService = bookService;
     }
-
+    
     @GetMapping("/{bookId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Optional<Books>> getBookById(@PathVariable Long bookId) {
@@ -34,9 +34,10 @@ public class BooksAdminController {
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Books> addNewBook(@RequestBody @Valid Books book) {
         Books newBook = bookService.addBook(book);
-        return new ResponseEntity<>(book, HttpStatus.CREATED);
+        return new ResponseEntity<>(newBook, HttpStatus.CREATED);
     }
 
+    // TODO: ta bort id i URL
     @PutMapping("/update-book/{bookId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Books> updateBook(@PathVariable @Valid Long bookId, @RequestBody Books books) {
@@ -44,6 +45,7 @@ public class BooksAdminController {
         return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }
 
+    // TODO: ta bort id i URL
     @DeleteMapping("/{bookId}/delete-book")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<String> deleteBook(@PathVariable Long bookId) {

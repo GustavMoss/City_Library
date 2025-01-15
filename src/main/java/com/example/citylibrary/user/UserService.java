@@ -21,6 +21,7 @@ public class UserService {
     private final UserRepository userRepo;
     private final UserDTOMapper userDTOMapper;
     private final JWTService jwtService;
+    // TODO: Dubbelkolla om denna krockar/stör med CustomPasswordEncoder. Byt ut?
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authManager;
 
@@ -79,6 +80,7 @@ public class UserService {
 
     }
 
+    // TODO: En snyggare lösning till detta?
     // update a users info
     public Users updateUserById(Long id, Users user) throws LibBadRequest {
         Optional<Users> userToUpdate = userRepo.findById(id);

@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// TODO: behövs inte längre, ta bort. Tas denna bort så klagar den på entiteten.
+// TODO: Ta bort allting admin-relaterat
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {

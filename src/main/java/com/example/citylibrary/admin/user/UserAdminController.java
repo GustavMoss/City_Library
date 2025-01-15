@@ -23,7 +23,6 @@ public class UserAdminController {
     @Autowired
     public UserAdminController(UserService userService) {
         this.userService = userService;
-
     }
 
     // create/register new user
@@ -33,7 +32,7 @@ public class UserAdminController {
         return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
     }
 
-    // TODO: not sure how to solve these. Need to get the user from somewhere. Maybe use the email? or Member-number? A librarian or admin would search by a username or membernumber that a user gives them and then they use that to access the object and change the data.
+    // TODO: ta bort id i URL
     // update existing user
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
@@ -42,6 +41,7 @@ public class UserAdminController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
+    // TODO: ta bort id i URL ???
     @GetMapping("/{userId}/active-loans")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<Loans>> getActiveUserLoansById(@PathVariable Long userId) {

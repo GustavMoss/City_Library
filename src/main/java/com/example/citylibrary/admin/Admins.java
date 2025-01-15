@@ -11,6 +11,8 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+// TODO: Ta bort allting admin-relaterat
+
 @Entity
 @Getter
 @Setter
